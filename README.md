@@ -6,9 +6,13 @@
 
 [eks1_doi_csv_nor](eks1_doi_csv_nor.ipynb) viser hvordan hente en enkel tabell, detaljomsetningsindeksen, med de nye parametrene i http GET
 
+[kt-v2-csv-nor](kt-v2-csv-nor.ipynb)Hent Konjunkturtendensene som CSV. Lag figurer og en stor tabell med prognoser markert i blått.
+
 [laks_v2_nor](laks_nor.ipynb) viser hvordan henter datasett som JSON-stat2 med både http GET og POST.
 
-[text-code](text-code-api2-nor.ipynb) - Få Kode og Tekst i JSON-stat og Pandas - eksempel med HS-varekoder i månedlig Utenrikshandel
+[text-code](text-code-api2-nor.ipynb) - Få Kode og Tekst i JSON-stat2 og Pandas - eksempel med HS-varekoder i månedlig Utenrikshandel
+
+[komm-nr-id](komm-nr-id-nor.ipynb) - Hvordan vise **både** kommunenummer/-kode og kommunenavn i en dataframe, dvs. vise kode og tekst i JSON-stat2
 
 -----
 [Lag dynamisk URL](https://nesa.no/ssb/forenkle_url.html) Endre fra statisk til dynamisk tid i API URL.
