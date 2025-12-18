@@ -14,6 +14,9 @@
 
 [komm-nr-id](komm-nr-id-nor.ipynb) - Hvordan vise **både** kommunenummer/-kode og kommunenavn i en dataframe, dvs. vise kode og tekst i JSON-stat2
 
+**Javascript eksempler**
+[kpi_js_v2](kpi_js_v2.html) - Enkel KPI-figur med Highcharts
+
 -----
 [Lag dynamisk URL](https://nesa.no/ssb/forenkle_url.html) Endre fra statisk til dynamisk tid i API URL.
 
@@ -32,3 +35,4 @@
 [laks_v2_eng](laks_eng.ipynb) shows how to get a datasett as JSON-stat2, using both http GET and POST.
 
 [text-code-eng](text-code-api2-eng.ipynb) - Get both code and taxt in JSON-stat2 and Pandas - example with HS codes for goods from monthly foreign trade statistics
+

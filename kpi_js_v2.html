@@ -1,0 +1,200 @@
+<!-- 
+    MAL FOR SSB API (PxWebApi v2) MED HIGHCHARTS - versjon 1
+    --------------------------------------------
+    Denne filen er et utgangspunkt for å lage javascript visualiseringer mot Statistikkbanken.
+    
+    Slik bruker du malen:
+    1. Finn en tabell på ssb.no (f.eks. tabell 03013 for KPI).
+    2. Gå til "API Spørring" for tabellen.
+    3. Kopier eller rediger PxWebApi v2-urlen.
+    4. Oppdater KONFIGURASJON-seksjonen nedenfor med riktig TABLE_ID og spørringsparametere.
+    5. Tilpass `createChart`-funksjonen for å velge riktige data/serier.
+-->
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SSB API Mal - Highcharts</title>
+
+    <!-- 1. Inkluder nødvendige biblioteker -->
+    <script src="https://json-stat.org/lib/json-stat.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #container {
+            width: 100%;
+            height: 500px;
+            margin: 0 auto;
+        }
+
+        .info {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 2. Container for diagrammet -->
+    <div id="container"></div>
+
+    <div class="info">
+        <p>SSB API v2 mot Statistikkbanken - GET spørring / JSON-stat med Highcharts eksempel.</p>
+        <p>Se kildekoden for detaljer.</p>
+    </div> 
+
+    <script>
+        // --- KONFIGURASJON (ENDRE DETTE) ---
+
+        // 1. Tabell-ID fra SSB (f.eks. "13430")
+        const TABLE_ID = "03013";
+
+        // 2. Språk ("no" eller "en")
+        const LANG = "no";
+
+        // 3. Base URL (trenger vanligvis ikke endres)
+        const BASE_URL = `https://data.ssb.no/api/pxwebapi/v2/tables/${TABLE_ID}/data?lang=${LANG}`;
+
+        // 4. Din spesifikke spørring (URL-parametere etter '?')
+        //    Tips: Lim inn alt etter "data?" fra API-URLen din her.
+
+        const API_QUERY_PARAMS = "&valueCodes[Konsumgrp]=TOTAL&valueCodes[ContentsCode]=KpiIndMnd&valueCodes[Tid]=from(2015M01)&codelist[Konsumgrp]=vs_CoiCop2016niva1&outputformat=json-stat2";
+
+        const API_URL = BASE_URL + API_QUERY_PARAMS;
+
+
+        /**
+         * Hovedfunksjon som kjøres når data er hentet
+         * @param {Object} data - JSON-stat respons fra APIet
+         */
+        function createChart(data) {
+            // Bruker JSONstat biblioteket til å parse responsen
+            const ds = JSONstat(data).Dataset(0);
+
+            // --- DEBUGGING HJELP ---
+            // Åpne nettleserens konsoll (F12) for å se hvilke dimensjoner og kategorier som finnes i datasettet.
+            console.log("Datasett:", ds);
+            console.log("Dimensjoner:", ds.Dimension().map(d => d.label));
+
+            // --- 1. HENT METADATA OG DIMENSJONER ---
+
+            // Finn tids-dimensjonen automatisk (role: "time")
+            const timeDim = ds.Dimension({ role: "time" })[0];
+            const periods = timeDim.id; // Liste med tidsperioder for x-aksen
+
+            // Lag en tittel for perioden
+            const fromTo = `: ${periods[0]} - ${periods[periods.length - 1]}`;
+
+            // Finn statistikkvariabel-dimensjonen (ofte "ContentsCode")
+            // Sjekk konsollen hvis du er usikker på navnet (role: "metric")
+            const contentsCodeDim = ds.Dimension({ role: "metric" })[0];
+            const content = contentsCodeDim.Category();
+
+            // Kildehenvisning
+            const sourceText = (LANG === "no") ? "Kilde: SSB, tabell: " : "Source: Statistics Norway, StatBank table: ";
+            const tableUrl = (LANG === "no") ? `https://www.ssb.no/statbank/table/${TABLE_ID}` : `https://www.ssb.no/en/statbank/table/${TABLE_ID}`;
+
+            // Oppdateringstidspunkt
+            const updatedDate = new Date(ds.updated);
+            const formattedDate = new Intl.DateTimeFormat(LANG === 'no' ? 'nb-NO' : 'en-GB', {
+                dateStyle: 'short', timeStyle: 'short'
+            }).format(updatedDate);
+
+            // Tittel
+            const shortTitle = ds.extension.px ? ds.extension.px.contents : ds.label;
+            document.title = shortTitle;
+
+            // --- 2. KLARGJØR DATA FOR HIGHCHARTS (TILPASS DETTE) ---
+
+            // Her må du velge hvilke serier du vil vise.
+            // Sjekk `contentsCodeDim.Category()` eller liknende i konsollen for å finne riktige ID-er.
+
+            const series = [
+                {
+                    name: ds.Dimension("Konsumgrp").Category("TOTAL").label,
+                    data: ds.value || [],
+                    marker: { radius: 2 } // Eksempel på styling
+                }
+            ];
+
+            // --- 3. KONFIGURER HIGHCHARTS ---
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'line' // 'line', 'column', 'bar', etc.
+                },
+                title: {
+                    text: shortTitle + fromTo
+                },
+                subtitle: {
+                    text: `Oppdatert: ${formattedDate}`
+                },
+                credits: {
+                    text: sourceText + ds.label,
+                    href: tableUrl,
+                    position: { align: 'left', x: 25 },
+                    style: { cursor: 'pointer', color: '#000' }
+                },
+                colors: ['#1a9d49', '#274247', '#0075b2', '#f2d018'], // SSB-farger
+                xAxis: {
+                    categories: periods,
+                    title: { text: timeDim.label },
+                    tickInterval: 12,
+                    tickmarkPlacement: 'on',
+                    tickPosition: 'inside',
+                    tickWidth: 1,
+
+                },
+                yAxis: {
+                    title: {
+                        // Prøver å finne enhet automatisk, ellers tom streng
+                        text: content[0]?.unit?.base || "Verdi"
+                    }
+                },
+                series: series
+            });
+        }
+
+        // --- HENT DATA ---
+        async function fetchData() {
+            try {
+                console.log("Henter data fra:", API_URL);
+                const response = await fetch(API_URL, { method: 'GET' });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                createChart(data);
+
+            } catch (error) {
+                console.error('Feil ved henting av data:', error);
+                document.getElementById('container').innerHTML = `
+                    <div style="color:red; text-align:center; padding: 20px;">
+                        <h3>Klarte ikke å laste data</h3>
+                        <p>${error.message}</p>
+                        <small>${API_URL}</small>
+                    </div>`;
+            }
+        }
+
+        fetchData();
+
+    </script>
+</body>
+
+</html>
