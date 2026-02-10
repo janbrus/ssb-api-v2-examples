@@ -61,7 +61,7 @@
         // --- KONFIGURASJON (ENDRE DETTE) ---
 
         // 1. Tabell-ID fra SSB (f.eks. "13430")
-        const TABLE_ID = "03013";
+        const TABLE_ID = "14700";
 
         // 2. Språk ("no" eller "en")
         const LANG = "no";
@@ -72,7 +72,7 @@
         // 4. Din spesifikke spørring (URL-parametere etter '?')
         //    Tips: Lim inn alt etter "data?" fra API-URLen din her.
 
-        const API_QUERY_PARAMS = "&valueCodes[Konsumgrp]=TOTAL&valueCodes[ContentsCode]=KpiIndMnd&valueCodes[Tid]=from(2015M01)&codelist[Konsumgrp]=vs_CoiCop2016niva1&outputformat=json-stat2";
+        const API_QUERY_PARAMS = "&valueCodes[VareTjenesteGrp]=00&valueCodes[ContentsCode]=KpiIndMnd&valueCodes[Tid]=from(2015M01)&codelist[VareTjenesteGrp]=vs_CoiCop2018Kpi01&outputformat=json-stat2";
 
         const API_URL = BASE_URL + API_QUERY_PARAMS;
 
@@ -125,7 +125,7 @@
 
             const series = [
                 {
-                    name: ds.Dimension("Konsumgrp").Category("TOTAL").label,
+                    name: ds.Dimension("VareTjenesteGrp").Category("00").label,
                     data: ds.value || [],
                     marker: { radius: 2 } // Eksempel på styling
                 }
