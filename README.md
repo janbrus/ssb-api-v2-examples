@@ -4,6 +4,8 @@
 
 **Jupyter notebooks**
 
+Til en viss grad viser rekkefølgen økende kompleksitet
+
 [eks1_doi_csv_nor](eks1_doi_csv_nor.ipynb) viser hvordan hente en enkel tabell, detaljomsetningsindeksen, med de nye parametrene i http GET
 
 [kt-v2-csv-nor](kt-v2-csv-nor.ipynb)Hent Konjunkturtendensene som CSV. Lag figurer og en stor tabell med prognoser markert i blått.
@@ -14,6 +16,8 @@
 
 [komm-nr-id](komm-nr-id-nor.ipynb) - Hvordan vise **både** kommunenummer/-kode og kommunenavn i en dataframe, dvs. vise kode og tekst i JSON-stat2
 
+[get_many_default_tables](get_many_default_tables.ipynb) Fra API-søk til tabell, hent forhåndsvalgt uttrekk for mange tabeller.
+
 **Javascript eksempler**
 
 [kpi_js_v2](kpi_js_v2.html) - Enkel KPI-figur med Highcharts, nytt basisår 2025
@@ -21,7 +25,6 @@
 -----
 [Lag dynamisk URL](https://nesa.no/ssb/forenkle_url.html) Endre fra statisk til dynamisk tid i API v2 URL.
 
-[get_many_default_tables](get_many_default_tables.ipynb) er et eksempel på å hente alle tabeller innen en statististikk, her KPI, med det nye default uttrekket. Dette eksemeplet virker for tiden ikke, fordi en før lansering av V2  har besluttet å ta vekk /navigation .
 
 [beta-bruker](beta-bruker.md) er en foreløpig oversettelse til norsk av en litt mangelfull og utdatert brukerveiledning.
 
