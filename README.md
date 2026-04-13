@@ -22,7 +22,12 @@ Til en viss grad viser rekkefølgen økende kompleksitet
 
 [kpi_js_v2](kpi_js_v2.html) - Enkel KPI-figur med Highcharts, nytt basisår 2025
 
+**Skill for SSB PxWebApi v2**
+
+[skill/](claude-skill/) — En [Skill](https://support.claude.com/en/articles/12512180-use-skills-in-claude) som lærer Claude (AI) å bruke PxWebApi v2 mot SSB. Kan brukes i Claude og Claude Code, f.eks. med MCP. Vil trolig fungere for andre enn Claude. Denne er bedre, med færre feil enn Try sin. Se [skill/README.md](skill/README.md) for installasjon.
+
 -----
+
 [Lag dynamisk URL](https://nesa.no/ssb/forenkle_url.html) Endre fra statisk til dynamisk tid i API v2 URL.
 
 
