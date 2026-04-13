@@ -24,7 +24,7 @@ Til en viss grad viser rekkefølgen økende kompleksitet
 
 **Skill for SSB PxWebApi v2**
 
-[ssb-pxwebapi-v2-skill/](claude-skill/) — En Skill som lærer Claude (AI) å bruke PxWebApi v2 mot SSB. Kan brukes i Claude og Claude Code, f.eks. med MCP. Fungerer trolig for flere enn Claude. Denne er bedre, med færre feil enn Try sin. Se [ssb-pxwebapi-v2-skill/README.md](skill/README.md) for installasjon.
+[ssb-pxwebapi-v2-skill/](ssb-pxwebapi-v2-skill/) — En Skill som lærer Claude (AI) å bruke PxWebApi v2 mot SSB. Kan brukes i Claude og Claude Code, f.eks. med MCP. Fungerer trolig for flere enn Claude. Denne er bedre, med færre feil enn Try sin. Se [ssb-pxwebapi-v2-skill/README.md](ssb-pxwebapi-v2-skill/README.md) for installasjon.
 
 -----
 
