@@ -24,7 +24,7 @@ Til en viss grad viser rekkefølgen økende kompleksitet
 
 **Skill for SSB PxWebApi v2**
 
-[skill/](claude-skill/) — En [Skill](https://support.claude.com/en/articles/12512180-use-skills-in-claude) som lærer Claude (AI) å bruke PxWebApi v2 mot SSB. Kan brukes i Claude og Claude Code, f.eks. med MCP. Vil trolig fungere for andre enn Claude. Denne er bedre, med færre feil enn Try sin. Se [skill/README.md](skill/README.md) for installasjon.
+[ssb-pxwebapi-v2-skill/](claude-skill/) — En Skill som lærer Claude (AI) å bruke PxWebApi v2 mot SSB. Kan brukes i Claude og Claude Code, f.eks. med MCP. Fungerer trolig for flere enn Claude. Denne er bedre, med færre feil enn Try sin. Se [ssb-pxwebapi-v2-skill/README.md](skill/README.md) for installasjon.
 
 -----
 
@@ -44,4 +44,6 @@ Til en viss grad viser rekkefølgen økende kompleksitet
 [laks_v2_eng](laks_eng.ipynb) shows how to get a datasett as JSON-stat2, using both http GET and POST.
 
 [text-code-eng](text-code-api2-eng.ipynb) - Get both code and text in JSON-stat2 and Pandas - example with HS codes for goods from monthly foreign trade statistics
+
+
 
