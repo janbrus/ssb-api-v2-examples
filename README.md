@@ -30,7 +30,6 @@ Til en viss grad viser rekkefølgen økende kompleksitet
 
 [Lag dynamisk URL](https://nesa.no/ssb/forenkle_url.html) Endre fra statisk til dynamisk tid i API v2 URL.
 
-
 [beta-bruker](beta-bruker.md) er en foreløpig oversettelse til norsk av en litt mangelfull og utdatert brukerveiledning.
 
 
@@ -45,5 +44,6 @@ Til en viss grad viser rekkefølgen økende kompleksitet
 
 [text-code-eng](text-code-api2-eng.ipynb) - Get both code and text in JSON-stat2 and Pandas - example with HS codes for goods from monthly foreign trade statistics
 
+**Generic skill for PxWebApi v2**
 
-
+[pxwebapi-v2-generic-skill/](pxwebapi-v2-generic-skill/) — BETA: A Claude (AI) Skill to use PxWebApi v2 against PxWebApi v2 installations using JSON-stat v2. Can be used in Claude and Claude Code, e.g. with MCP. Probably works for more than Claude. See [pxwebapi-v2-generic-skill/README.md](pxwebapi-v2-generic-skill/README.md) for installation.
