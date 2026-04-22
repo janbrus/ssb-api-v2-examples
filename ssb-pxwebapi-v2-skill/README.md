@@ -4,7 +4,7 @@ En [Claude Skill](https://support.claude.com/en/articles/12512180-use-skills-in-
 
 ## Hva skillen gjør
 
-- Guider Claude gjennom riktig arbeidsflyt: søk → metadata → query → presenter
+- Guider AI-assisteneten gjennom riktig arbeidsflyt: søk → metadata → query → presenter
 - Dekker alle endepunkter i PxWebApi v2 (tabeller, metadata, kodelister, lagrede spørringer, config)
 - Håndterer kodelister og aggregeringer (fylker, kommunesammenslåinger, aldersgrupper)
 - Støtter norsk og engelsk
@@ -25,7 +25,8 @@ claude-skill/
 
 ## Installasjon
 
-### Claude.ai (chat og Cowork)
+### For AI-plattformer som støtter skills/prompts
+
 
 1. Last ned ZIP-filen: [ssb-pxwebapi-v2-skill.zip](../ssb-pxwebapi-v2-skill.zip) (eller pakk denne mappen som ZIP selv)
 2. Gå til **Settings > Features > Skills** i Claude.ai
@@ -43,12 +44,18 @@ cp -r claude-skill ~/.claude/skills/ssb-pxwebapi-v2
 cp -r claude-skill .claude/skills/ssb-pxwebapi-v2
 ```
 
-## Bruk sammen med MCP-server
+### Andre
 
-Skillen er ren kunnskap — den gir Claude *veiledning* for hvordan API-et fungerer. For at Claude faktisk skal kunne *kalle* API-et, trenger du også verktøy. Alternativer:
+Følg plattformens dokumentasjon for å legge til tilpassede instruksjoner eller "skills".
 
+
+## Bruk sammen med MCP-server eller API-klient
+
+Skillen er ren kunnskap — den gir AI-assistenten *veiledning* for hvordan PxWebApi v2 fungerer. For at Claude faktisk skal kunne *kalle* API-et, trenger du også verktøy. Alternativer:
+
+
+- **@jarib/pxweb-mcp** (https://www.npmjs.com/package/@jarib/pxweb-mcp) — open source MCP-server for PxWeb-APIer, fungerer med SSB og andre statistikkbyråer som bruker PxWeb V2
 - **TRYs MCP-server** (https://tools.try.no/ssb-mcp) — ferdig hosted MCP-server med `ssb_search`, `ssb_get_data` m.fl.
-- **@jarib/pxweb-mcp** (https://www.npmjs.com/package/@jarib/pxweb-mcp) — open source MCP-server for PxWeb-APIer, fungerer med SSB og andre statistikkbyråer som bruker PxWeb
 - **Egen MCP-server** — bygg din egen med FastMCP eller lignende
 - **Direkte API-kall** — skillen beskriver endepunktene slik at Claude kan konstruere korrekte URL-er
 
