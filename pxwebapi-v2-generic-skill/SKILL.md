@@ -3,10 +3,10 @@ name: pxwebapi-v2
 description: >
   Access official statistics from any PxWebApi v2 installation. Use when querying
   statistical databases from agencies like Statistics Sweden (SCB), Statistics Norway
-  (SSB), or any other institution running PxWebApi v2. Trigger on "Swedish statistics",
-  "SCB data", "Nordic statistics", "PxWeb", "PxWebApi", "statistical database",
-  "Statistikdatabasen", or similar. Covers table search, metadata, data queries,
-  codelists, and saved queries.
+  (SSB), Statistics Finland, Statistics Iceland, or any other institution running
+  PxWebApi v2. Trigger on "Swedish statistics", "SCB data", "Nordic statistics",
+  "PxWeb", "PxWebApi", "statistical database", "Statistikdatabasen", or similar.
+  Covers table search, metadata, data queries, codelists, and saved queries.
 ---
 
 # PxWebApi v2 — Generic Skill
@@ -20,7 +20,7 @@ This skill guides you through using PxWebApi v2 to search, explore, and retrieve
 | Statistics Norway (SSB) | Norway | `https://data.ssb.no/api/pxwebapi/v2` | no, en |
 | Statistics Sweden (SCB) | Sweden | `https://statistikdatabasen.scb.se/api/v2` | sv, en |
 
-More agencies are expected to migrate to v2. Check `/config` at the base URL to verify a v2 installation. Do not use v2 endpoints against agencies still running v1 — the API structure is different.
+More agencies are expected to migrate to v2. Check `/config` at the base URL to verify a v2 installation.
 
 **Important:** Each installation has its own limits (cell count, rate limiting), table IDs, variable codes, and codelists. Always check `/config` and metadata for the specific installation you are querying.
 
@@ -52,7 +52,7 @@ Follow these steps in order. Never skip the metadata step.
 
 Determine which PxWebApi v2 installation the user needs. If unclear, ask. Then set the base URL accordingly.
 
-If you are unsure about the installation's limits or available formats, check:
+Always start by checking the configuration:
 ```
 GET {base_url}/config
 ```
@@ -74,13 +74,9 @@ Use `GET {base_url}/tables` with the `query` parameter.
 
 **Search tips:**
 - Use the local language terms of the agency for best results
-- The search covers table titles, variables, and variable values (case-insensitive)
-- `title:` prefix restricts search to the title field: `title:population`
+- `title:` prefix restricts search to the title field
 - Truncation: `population*` matches anything starting with "population"
 - Boolean operators: `trade AND fish*`
-- Fuzzy search: `~N` after a word allows N character deviations
-- Proximity search: `"foreign trade" ~5` finds words within 5 words of each other
-- Date search: `updated:20250908*` or `updated:[20250908 TO 20250912*]`
 - Check `lastPeriod` and `timeUnit` in results
 
 Present the 3–5 most relevant hits with table ID, title, last period, time frequency, and `discontinued` status.
@@ -98,10 +94,10 @@ Metadata is returned in json-stat2 format. Focus on:
 
 **Key rules:**
 - Variables with `elimination: true` can be omitted — they are summed automatically
-- Variables with `elimination: false` MUST be included in the query. Time and `ContentsCode` are never eliminable.
+- Variables with `elimination: false` MUST be included in the query. `Tid` (time) and `ContentsCode` are never eliminable.
 - `ContentsCode` tells you what is measured — check `category.unit` for unit and decimals
 
-**Codelists:** Group values into higher aggregation levels. Two types: Aggregation (`agg_` prefix) maps many-to-one; Valueset (`vs_` prefix) shows an alternative set of values. You can fetch metadata with a codelist pre-activated: `GET /tables/{id}/metadata?codelist[Region]=agg_KommFylker`. See `references/codelists-and-filters.md` for details.
+**Codelists:** Group values into higher aggregation levels. Two types: Aggregation (`agg_` prefix) maps many-to-one; Valueset (`vs_` prefix) shows an alternative set of values. See `references/codelists-and-filters.md` for details.
 
 **Default selection:** Use `GET {base_url}/tables/{id}/defaultselection` as a starting point for large tables.
 
@@ -117,23 +113,22 @@ Content-Type: application/json
 
 {
   "selection": [
-    { "variableCode": "Region", "valueCodes": ["0301"] },
-    { "variableCode": "ContentsCode", "valueCodes": ["Personer1"] },
+    { "variableCode": "Region", "valueCodes": ["01"] },
+    { "variableCode": "ContentsCode", "valueCodes": ["Population"] },
     { "variableCode": "Tid", "valueCodes": ["top(5)"] }
   ]
 }
 ```
-(Example uses SSB table 07459 — codes are installation-specific.)
 
 #### GET (simpler queries, shareable URLs)
 
 ```
-GET {base_url}/tables/07459/data?valueCodes[Region]=0301&valueCodes[ContentsCode]=Personer1&valueCodes[Tid]=top(5)&outputFormat=json-stat2
+GET {base_url}/tables/{id}/data?valueCodes[Region]=01&valueCodes[ContentsCode]=Population&valueCodes[Tid]=top(5)&outputFormat=json-stat2
 ```
 
 #### Filter expressions in valueCodes
 
-Key patterns: `top(N)` = last N values, `from(value)` = from and including, `range(from,to)` = interval, `*` = all values. Wildcards `*` and `?` can be used for pattern matching (e.g. `46*` = all codes starting with "46"). See `references/codelists-and-filters.md` for complete syntax, including `outputValues` for aggregation control.
+Key patterns: `top(N)` = last N values, `from(value)` = from and including, `range(from,to)` = interval, `*` = all values. Wildcards `*` and `?` can be used for pattern matching. See `references/codelists-and-filters.md` for complete syntax.
 
 #### Output formats
 
@@ -150,21 +145,17 @@ Key patterns: `top(N)` = last N values, `from(value)` = from and including, `ran
 
 **OutputFormatParams** (can be combined): `UseCodes`, `UseTexts`, `UseCodesAndTexts`, `IncludeTitle`, `SeparatorTab` / `SeparatorSpace` / `SeparatorSemicolon`.
 
-**`heading` and `stub`:** Control pivoting with `heading` (variables in columns) and `stub` (variables in rows) parameters. Useful for csv/html/xlsx output.
-
 **Important limits:**
 - Check `/config` for `maxDataCells` — this varies between installations (e.g. SSB: 800,000, SCB: 150,000)
 - Rate limiting: `/config` shows `maxCallsPerTimeWindow` and `timeWindow`
 - GET URLs cannot exceed ~2,100 characters — use POST for complex queries
-- The API always returns decimal point regardless of language — reformat for presentation as needed
 - Start narrow — it's easier to expand than to handle too much data
 
 ### Step 5: Present results
 
 - Display data in a clean markdown table
-- Always include source attribution with agency name and table ID
+- **Always** include source attribution listing **every table ID used** — if multiple tables were combined, list all of them (e.g. "Source: {Agency}, tables {id1}, {id2}, …"); never omit a source table
 - Explain what the numbers mean in context — in the user's language
-- The API returns decimal point regardless of language — adapt number formatting to the user's locale when presenting
 - Present units clearly (count, percent, index, currency)
 - Offer to visualize the data or download in another format
 
@@ -177,19 +168,17 @@ POST {base_url}/savedqueries
 Content-Type: application/json
 
 {
-  "tableId": "07459",
+  "tableId": "{id}",
   "language": "en",
   "selection": {
     "selection": [
-      { "variableCode": "Region", "valueCodes": ["0301"] },
-      { "variableCode": "ContentsCode", "valueCodes": ["Personer1"] },
+      { "variableCode": "Region", "valueCodes": ["01"] },
       { "variableCode": "Tid", "valueCodes": ["top(5)"] }
     ]
   },
   "outputFormat": "json-stat2"
 }
 ```
-(Example uses SSB table 07459 — adapt table ID and codes for your installation.)
 
 Useful for reports that are updated regularly — `top(N)` always returns the latest periods.
 
@@ -197,7 +186,7 @@ Useful for reports that are updated regularly — `top(N)` always returns the la
 
 ## Response format
 
-Both metadata and data are returned as **json-stat2** by default. See `references/api-details.md` for the Dataset structure and status codes.
+Both metadata and data are returned as **json-stat2** by default. See `references/json-stat2.md` for the Dataset structure, row-major indexing and status codes (format spec — also applies to non-PxWeb providers like Eurostat). See `references/api-details.md` for PxWebApi-specific configuration.
 
 ---
 
@@ -206,7 +195,7 @@ Both metadata and data are returned as **json-stat2** by default. See `reference
 **Always:**
 - Search first — never guess table IDs
 - Check metadata before building a query
-- Check `/config` when unsure about limits or available formats
+- Check `/config` for the specific installation's limits
 - Filter on time to keep datasets manageable
 - Show source with agency name and table ID
 - Present units clearly
@@ -218,49 +207,6 @@ Both metadata and data are returned as **json-stat2** by default. See `reference
 - Mix codes from different codelists
 - Present data without units
 - Ignore the `status` field — it may indicate missing or confidential values
-
----
-
-## Examples
-
-### Population of Oslo (SSB, Norway)
-
-```
-1. GET https://data.ssb.no/api/pxwebapi/v2/tables?query=folkemengde
-2. GET /tables/07459/metadata
-3. POST /tables/07459/data
-   { "selection": [
-       { "variableCode": "Region", "valueCodes": ["0301"] },
-       { "variableCode": "ContentsCode", "valueCodes": ["Personer1"] },
-       { "variableCode": "Tid", "valueCodes": ["top(1)"] }
-   ]}
-→ "As of 1 January 2026, Oslo had 728,714 inhabitants (Source: Statistics Norway, table 07459)"
-```
-
-### All counties using codelist (SSB, Norway)
-
-```
-1. GET /tables/07459/metadata?codelist[Region]=agg_KommFylker
-   → Region now shows county codes with F- prefix (F-03, F-11, F-46 etc.)
-2. POST /tables/07459/data
-   { "selection": [
-       { "variableCode": "Region", "codelist": "agg_KommFylker",
-         "valueCodes": ["*"] },
-       { "variableCode": "ContentsCode", "valueCodes": ["Personer1"] },
-       { "variableCode": "Tid", "valueCodes": ["top(1)"] }
-   ]}
-→ Population per county. The codelist limits * to county codes only.
-```
-
-Note: These examples use SSB-specific table IDs and codes. Other installations will have different IDs and codes — always check metadata.
-
----
-
-## Licensing
-
-Data licensing varies by agency. Check each agency's terms:
-- SSB: Creative Commons CC BY 4.0
-- SCB: CC0 (public domain)
 
 ---
 

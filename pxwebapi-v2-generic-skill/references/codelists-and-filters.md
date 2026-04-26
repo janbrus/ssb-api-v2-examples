@@ -8,45 +8,31 @@ Reference for codelists and filter expressions in PxWebApi v2.
 
 ### Two types of codelists
 
-| Type | Prefix | Description |
-|---|---|---|
-| **Aggregation** | `agg_` | Maps many values to one (e.g. municipalities → regions) |
-| **Valueset** | `vs_` | Shows an alternative set of values (e.g. only county codes) |
+| Type | Prefix | Description | Example |
+|---|---|---|---|
+| **Aggregation** | `agg_` | Maps many values to one (e.g. municipalities → regions) | `agg_RegionLevel` |
+| **Valueset** | `vs_` | Shows an alternative set of values | `vs_RegionOnly` |
 
-Codelist IDs vary between installations and tables. Always check metadata.
-
-Examples from SSB (Norway) — other installations will have different IDs:
-- `agg_KommFylker` — municipalities aggregated to counties (F- prefix on codes)
-- `agg_KommSummer` — municipalities summed with current boundaries (K- prefix on codes)
-- `vs_Fylker2024` — only county codes
-- `agg_FemAarigGruppering` — 5-year age groups
+Codelist IDs and prefixes vary between installations and tables. Always check metadata.
 
 ### Finding available codelists
 
 Codelists are listed in metadata under `dimension.{variable}.extension.codelists`.
 
-### Fetching metadata with a codelist pre-activated
-
-You can fetch metadata with a codelist already applied:
-```
-GET /tables/{id}/metadata?codelist[Region]=agg_KommFylker
-```
-The variable then shows the aggregated codes instead of the originals. Useful for discovering which codes to use in your query.
-
 ### Using a codelist in a data query
 
-**POST** (example from SSB table 07459):
+**POST:**
 ```json
 {
   "selection": [
     {
       "variableCode": "Region",
-      "codelist": "agg_KommFylker",
+      "codelist": "agg_RegionLevel",
       "valueCodes": ["*"]
     },
     {
       "variableCode": "ContentsCode",
-      "valueCodes": ["Personer1"]
+      "valueCodes": ["Population"]
     },
     {
       "variableCode": "Tid",
@@ -56,12 +42,12 @@ The variable then shows the aggregated codes instead of the originals. Useful fo
 }
 ```
 
-**GET** (same query):
+**GET:**
 ```
-GET /tables/07459/data?valueCodes[Region]=*&codelist[Region]=agg_KommFylker&valueCodes[ContentsCode]=Personer1&valueCodes[Tid]=top(5)
+GET /tables/{id}/data?valueCodes[Region]=*&codelist[Region]=agg_RegionLevel&valueCodes[ContentsCode]=Population&valueCodes[Tid]=top(5)
 ```
 
-`ContentsCode` and time are never eliminable and must always be included.
+`ContentsCode` and `Tid` are never eliminable and must always be included.
 
 ### Looking up codelist contents
 
@@ -75,18 +61,10 @@ Returns all codes with labels and `valueMap` showing which original codes map to
 
 When using an aggregation codelist, `outputValues[variable]` controls what is returned:
 
-| Value | Description | Use case |
-|---|---|---|
-| `aggregated` | Return aggregated (summed) values | Consistent time series over boundary changes |
-| `single` | Return individual values from the codelist without summing | Select a subset of values |
-
-### Codes in aggregation codelists may have prefixes
-
-Aggregation codelists often add prefixes to their codes. For example, in SSB:
-- `agg_KommFylker` uses `F-` prefix: `F-03` (Oslo), `F-11` (Rogaland)
-- `agg_KommSummer` uses `K-` prefix: `K-0301` (Oslo), `K-3103` (Moss)
-
-Always check the codelist contents to see the actual codes.
+| Value | Description |
+|---|---|
+| `aggregated` | Return aggregated (summed) values |
+| `single` | Return individual values from the codelist without summing |
 
 ---
 
@@ -117,7 +95,6 @@ Wildcards can be combined with explicit codes in the same valueCodes array:
 ```json
 { "variableCode": "Region", "valueCodes": ["0301", "46*"] }
 ```
-(SSB example: Oslo + all municipalities in Vestland county)
 
 ### Time formats
 
@@ -127,10 +104,10 @@ The format in valueCodes must match the table's `timeUnit`:
 |---|---|---|
 | Annual | `YYYY` | `"2024"` |
 | Monthly | `YYYYMNN` | `"2024M06"` |
-| Quarterly | `YYYYKN` | `"2024K2"` |
+| Quarterly | `YYYYKN` or `YYYYQN` | Varies by installation |
 | Weekly | `YYYYWNN` | `"2024W01"` |
 
-Both SSB and SCB use `K` for quarterly data. Always check metadata for actual time codes at other installations.
+**Note:** Quarterly format may differ between installations. SSB uses `K` (e.g. `2024K2`), SCB uses `K` as well. Always check metadata for actual time codes.
 
 ---
 
@@ -142,4 +119,4 @@ Both SSB and SCB use `K` for quarterly data. Always check metadata for actual ti
 4. **Time format varies per table** — check `timeUnit`
 5. **Codes are strings** — always in quotes, even purely numeric ones
 6. **Codelist IDs are case-sensitive** — use the exact ID from metadata
-7. **Codelist codes may have prefixes** — check the codelist contents before querying
+7. **Codelist codes may have prefixes** — aggregation codelists often use prefixes on their codes (check the codelist contents)

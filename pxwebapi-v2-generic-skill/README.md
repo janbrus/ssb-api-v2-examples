@@ -1,4 +1,4 @@
-# Claude Skill: PxWebApi v2 (Generic) - BETA
+# Claude Skill: PxWebApi v2 (Generic)
 
 A [Claude Skill](https://support.claude.com/en/articles/12512180-use-skills-in-claude) for accessing official statistics from any PxWebApi v2 installation.
 
@@ -14,17 +14,31 @@ Known v2 installations:
 
 - Guides Claude through the correct workflow: search → metadata → query → present
 - Covers all PxWebApi v2 endpoints (tables, metadata, codelists, saved queries, config)
-- Handles codelists, aggregations, and filter expressions
+- Handles codelists and aggregations
 - Works with any PxWebApi v2 installation — just specify the base URL
 - Fully in English for international use
+- Output format follows the open [json-stat2](https://json-stat.org/) spec, also used by Eurostat and World Bank
 
 ## What this skill does NOT include
 
-- Country-specific table lists (table IDs differ per installation)
-- Country-specific codelist IDs or regional codes (examples use SSB where needed, clearly marked)
+- Country-specific table lists (no `common-tables.md` — table IDs differ per installation)
+- Country-specific codelist IDs or regional codes
 - Country-specific metadata conventions (URN links to classification systems)
 
-For a comprehensive SSB-specific skill with curated table lists, codelist documentation, and Norwegian/English support, see [ssb-pxwebapi-v2](https://github.com/janbrus/ssb-api-v2-examples/tree/main/ssb-pxwebapi-v2-skill).
+For a comprehensive SSB-specific skill with curated table lists, codelist documentation, and Norwegian/English support, see [ssb-pxwebapi-v2](https://github.com/janbrus/ssb-api-v2-examples/tree/main/claude-skill).
+
+## File structure
+
+```
+generic-pxweb-v2-skill/
+├── SKILL.md                       # Main skill entrypoint (loaded on trigger)
+├── README.md                      # This file
+└── references/                    # Loaded on demand
+    ├── json-stat2.md              # json-stat2 format spec (Dataset, row-major indexing, status codes — also applies to Eurostat, World Bank)
+    ├── api-details.md             # PxWebApi-specific configuration (/config endpoint)
+    ├── codelists-and-filters.md   # Codelists, filters, aggregations, valueCodes syntax
+    └── troubleshooting.md         # Common errors and fixes
+```
 
 ## Installation
 
@@ -35,7 +49,7 @@ For a comprehensive SSB-specific skill with curated table lists, codelist docume
 
 ### Claude Code
 ```bash
-cp -r pxwebapi-v2-generic ~/.claude/skills/pxwebapi-v2
+cp -r generic-pxweb-v2-skill ~/.claude/skills/generic-pxweb-v2-skill
 ```
 
 ## MCP servers
@@ -44,10 +58,6 @@ For Claude to call the API directly, you need an MCP server:
 - **@jarib/pxweb-mcp** (https://www.npmjs.com/package/@jarib/pxweb-mcp) — open source, works with any PxWeb installation
 - Or build your own with FastMCP or similar
 
-## Licensing
+## License
 
-Data licensing varies by agency:
-- SSB (Norway): Creative Commons CC BY 4.0
-- SCB (Sweden): CC0 (public domain)
-
-PxWebApi v2 is open source: https://github.com/PxTools/PxWebApi
+PxWebApi v2 is open source: https://github.com/PxTools/PxWebApi. Data licensing depends on the individual agency.

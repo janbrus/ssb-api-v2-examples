@@ -1,41 +1,6 @@
-# API-detaljer og json-stat2
+# API-detaljer (PxWebApi v2 hos SSB)
 
-Referanse for json-stat2 responsformat og praktisk driftsinformasjon.
-
----
-
-## json-stat2 Dataset-struktur
-
-Både metadata (`/tables/{id}/metadata`) og data (`/tables/{id}/data`) returneres som json-stat2 Dataset:
-
-```json
-{
-  "version": "2.0",
-  "class": "dataset",
-  "label": "07459: Folkemengde, etter region, kjønn og alder 2024",
-  "source": "Statistisk sentralbyrå",
-  "updated": "2024-02-22",
-  "id": ["Region", "Kjonn", "Alder", "Tid"],
-  "size": [1, 1, 1, 5],
-  "dimension": { ... },
-  "value": [693494, 697010, 709037, 716272, 723803],
-  "role": { "time": ["Tid"], "geo": ["Region"], "metric": ["ContentsCode"] },
-  "status": { "3": ".." }
-}
-```
-
-### Nøkkelelementer
-
-- **`id`** — Variabelnavnene i rekkefølge
-- **`size`** — Antall verdier per variabel (i samme rekkefølge som `id`)
-- **`value`** — Flat array med alle dataverdier. Indeksen beregnes fra `id`, `size` og `dimension.{var}.category.index`.
-- **`dimension`** — Detaljert info per variabel med koder (`category.index`), navn (`category.label`), enheter (`category.unit`) og metadata (`extension`)
-- **`role`** — Hvilke variabler som har rolle som `time`, `geo` eller `metric`
-- **`status`** — Markerer spesielle verdier. Nøkkelen er indeks i value-arrayet:
-  - `"."` = ikke mulig å oppgi tall
-  - `".."` = tallgrunnlag mangler
-  - `":"` = konfidensielt (vises ikke av hensyn til identifisering)
-- **`extension`** — `firstPeriod`, `lastPeriod`, `discontinued`, kontaktpersoner, og PX-spesifikk metadata (`subject-code`, `subject-area`, `nextUpdate`)
+Praktisk driftsinformasjon for SSBs PxWebApi v2. For json-stat2-formatet (Dataset-struktur, indeksering, status-koder) — se `json-stat2.md`.
 
 ---
 

@@ -103,7 +103,7 @@ Bruk `GET /tables` med `query`-parameter.
 
 Presenter de 3–5 mest relevante treffene med tabell-ID, tittel, siste periode, tidsfrekvens og `discontinued`-status. Anbefal den mest passende.
 
-Respons-strukturen for hvert treff inkluderer: `id`, `label`, `description`, `updated`, `firstPeriod`, `lastPeriod`, `timeUnit` (Annual/Quarterly/Monthly/Weekly), `variableNames`, `discontinued`, `subjectCode`, og `paths` (emneplassering i SSBs hierarki).
+Respons-strukturen for hvert treff inkluderer: `id`, `label`, `description`, `updated`, `firstPeriod`, `lastPeriod`, `timeUnit` (Annual/Quarterly/Monthly/Weekly), `variableNames`, `discontinued`, `subjectCode`, og `paths` (emneplassering i SSBs hierarki — **3. nivå i pathen er statistikkens kortnavn**, f.eks. brukt i URL-er som `ssb.no/<kortnavn>`). Kortnavnet gir også tilgang til "Om statistikken"-siden med definisjoner og forklaringer: `https://www.ssb.no/<kortnavn>#om-statistikken` (norsk) eller `https://www.ssb.no/en/<kortnavn>#om-statistikken` (engelsk) — f.eks. `https://www.ssb.no/arblonn#om-statistikken`.
 
 Se `references/common-tables.md` for en kurert liste over mye brukte tabeller.
 
@@ -229,9 +229,9 @@ Viktigste mønstre: `top(N)` = siste N verdier, `from(verdi)` = fra og med, `ran
 ### Steg 5: Presenter resultatene
 
 - Vis dataene i en ryddig markdown-tabell
-- Inkluder alltid kildehenvisning:
-  - Norsk: **"Kilde: SSB, tabell {id}"**
-  - Engelsk: **"Source: Statistics Norway, table {id}"**
+- Inkluder **alltid** kildehenvisning med **samtlige tabell-ID-er** som er brukt (list opp alle hvis flere tabeller er kombinert — ikke utelat noen):
+  - Norsk: **"Kilde: SSB, tabell {id}"** (eller "tabellene {id1}, {id2}, …")
+  - Engelsk: **"Source: Statistics Norway, table {id}"** (eller "tables {id1}, {id2}, …")
 - Forklar hva tallene betyr i kontekst — på brukerens språk
 - Tallformat: norsk = mellomrom + komma (1 234,5); engelsk = komma + punktum (1,234.5)
 - Presenter enheter tydelig (antall/count, prosent/percent, indeks/index, NOK)
@@ -270,7 +270,7 @@ Nyttig for rapporter som oppdateres jevnlig — `top(N)` gir alltid de nyeste pe
 
 ## Responsformat
 
-Både metadata (`/tables/{id}/metadata`) og data (`/tables/{id}/data`) returneres som **json-stat2** som standard. Se `references/api-details.md` for json-stat2 Dataset-struktur, status-koder, og praktisk driftsinformasjon (publiseringstider, grenser, lisens).
+Både metadata (`/tables/{id}/metadata`) og data (`/tables/{id}/data`) returneres som **json-stat2** som standard. Se `references/json-stat2.md` for Dataset-struktur, indeksering (row-major) og status-koder. Se `references/api-details.md` for SSB-spesifikk driftsinfo (publiseringstider, grenser, lisens).
 
 ---
 

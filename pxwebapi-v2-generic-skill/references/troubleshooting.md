@@ -8,7 +8,7 @@ Common errors and solutions.
 
 ### 400 Bad Request
 
-Invalid request. Check the `detail` field in the Problem response (RFC 7807).
+Invalid request. Check the `detail` field in the Problem response.
 
 **Common causes:**
 - Unknown variable code — `variableCode` does not match metadata (case-sensitive)
@@ -17,17 +17,16 @@ Invalid request. Check the `detail` field in the Problem response (RFC 7807).
 - Too many cells — result exceeds `maxDataCells` from `/config`
 - Missing required variable — variable with `elimination: false` is missing from selection
 - Invalid codelist ID — codelist does not exist for this variable
-- Mixing function filters with explicit codes — `top()`, `from()`, `range()` must be used alone in valueCodes
 
 **Solution:** Re-fetch metadata and compare variable codes and value codes exactly.
 
 ### 403 Forbidden
 
-Request understood but denied. The table may not be available via API, or a saved query belongs to another session.
+Request understood but denied. The table may not be available via API.
 
 ### 404 Not Found
 
-Resource does not exist. Wrong table ID, codelist ID, or saved query ID. Also returned if URL exceeds ~2,100 characters.
+Resource does not exist. Wrong table ID, codelist ID, or saved query ID.
 
 **Solution:** Use `GET /tables?query=...` to find the correct ID.
 
@@ -49,7 +48,6 @@ Cell count = product of number of values per variable. Solution: limit time with
 
 - Try alternative keywords or synonyms in the agency's language
 - Use `includeDiscontinued=true` for historical series
-- Use `pastDays=30` to find recently updated tables
 - Check pagination: `page.totalPages` may indicate more result pages
 
 ### Special values in data

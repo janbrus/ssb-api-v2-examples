@@ -14,19 +14,21 @@ En [Claude Skill](https://support.claude.com/en/articles/12512180-use-skills-in-
 ## Filstruktur
 
 ```
-claude-skill/
+ssb-pxwebapi-v2/
 ├── SKILL.md                              # Hovedinstruksjoner og arbeidsflyt
+├── README.md                             # Denne filen
+├── CLAUDE.md                             # Veiledning for Claude Code ved redigering av selve skillen
 └── references/
-    ├── api-details.md                    # json-stat2-format og driftsinformasjon
+    ├── json-stat2.md                     # json-stat2 format-spesifikasjon (Dataset, row-major, status-koder — også gyldig for Eurostat, World Bank)
+    ├── api-details.md                    # SSB-spesifikk driftsinformasjon (publiseringstider, grenser, lisens)
     ├── codelists-and-filters.md          # Kodelister, filtersyntaks, outputValues
     ├── common-tables.md                  # Kurert liste over vanlige tabeller
-    └── troubleshooting.md               # Feilsøking og standardtegn
+    └── troubleshooting.md                # Feilsøking og standardtegn
 ```
 
 ## Installasjon
 
 ### For AI-plattformer som støtter skills/prompts
-
 
 1. Last ned ZIP-filen: [ssb-pxwebapi-v2-skill.zip](../ssb-pxwebapi-v2-skill.zip) (eller pakk denne mappen som ZIP selv)
 2. Gå til **Settings > Features > Skills** i Claude.ai
@@ -38,26 +40,24 @@ Kopier mappen til din globale eller prosjektspesifikke skills-katalog:
 
 ```bash
 # Globalt (tilgjengelig i alle prosjekter)
-cp -r claude-skill ~/.claude/skills/ssb-pxwebapi-v2
+cp -r ssb-pxwebapi-v2 ~/.claude/skills/ssb-pxwebapi-v2
 
 # Per prosjekt
-cp -r claude-skill .claude/skills/ssb-pxwebapi-v2
+cp -r ssb-pxwebapi-v2 .claude/skills/ssb-pxwebapi-v2
 ```
 
 ### Andre
 
 Følg plattformens dokumentasjon for å legge til tilpassede instruksjoner eller "skills".
 
-
 ## Bruk sammen med MCP-server eller API-klient
 
 Skillen er ren kunnskap — den gir AI-assistenten *veiledning* for hvordan PxWebApi v2 fungerer. For at Claude faktisk skal kunne *kalle* API-et, trenger du også verktøy. Alternativer:
 
-
 - **@jarib/pxweb-mcp** (https://www.npmjs.com/package/@jarib/pxweb-mcp) — open source MCP-server for PxWeb-APIer, fungerer med SSB og andre statistikkbyråer som bruker PxWeb V2
 - **TRYs MCP-server** (https://tools.try.no/ssb-mcp) — ferdig hosted MCP-server med `ssb_search`, `ssb_get_data` m.fl.
 - **Egen MCP-server** — bygg din egen med FastMCP eller lignende
-- **Direkte API-kall** — skillen beskriver endepunktene slik at Claude kan konstruere korrekte URL-er
+- **Direkte API-kall** — skillen beskriver endepunktene slik at Claude eller andre kan konstruere korrekte URL-er
 
 ## Lisens
 
