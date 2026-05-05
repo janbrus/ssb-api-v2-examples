@@ -1,6 +1,8 @@
-# Claude Skill: SCB PxWebApi v2 - BETA
+# SCB PxWebApi v2 Skill - BETA
 
-En [Claude Skill](https://support.claude.com/en/articles/12512180-use-skills-in-claude) som lär AI-verktyg som Claude att söka, utforska och hämta data från SCB:s Statistikdatabas via PxWebApi v2.
+En [Claude Skill](https://support.claude.com/en/articles/12512180-use-skills-in-claude) som lär AI-verktyg som Claude att söka, utforska och hämta data från SCB:s Statistikdatabas via PxWebApi v2. 
+
+Dette er en redusert versjon, laget med Claude, basert på den norske [SSB PxWebApi v2 skill ](../tree/main/ssb-pxwebapi-v2-skill)
 
 ## Vad skillen gör
 
@@ -30,7 +32,7 @@ scb-pxweb-v2/
 ### Claude Code
 
 ```bash
-cp -r scb-pxweb-v2 ~/.claude/skills/scb-pxweb-v2
+cp -r scb-pxweb-v2-skill ~/.claude/skills/scb-pxweb-v2-skill
 ```
 
 ## MCP-servrar

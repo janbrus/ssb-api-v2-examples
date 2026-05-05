@@ -1,12 +1,15 @@
 # Claude Skill: PxWebApi v2 (Generic)
 
-A [Claude Skill](https://support.claude.com/en/articles/12512180-use-skills-in-claude) for accessing official statistics from any PxWebApi v2 installation.
+A [Claude Skill](https://support.claude.com/en/articles/12512180-use-skills-in-claude) for accessing official statistics from any PxWebApi v2 installation. 
+
+This skill is a reduced version based on the one for Statistics Norway [SSB PxWebApi v2 skill ](../tree/main/ssb-pxwebapi-v2-skill).
 
 ## What is PxWebApi v2?
 
 PxWebApi v2 is a REST API for statistical databases, developed by Statistics Sweden (SCB) and used by national statistical institutes across the Nordics and beyond. It provides a standardized way to search, explore, and retrieve official statistics.
 
 Known v2 installations:
+
 - **Statistics Norway (SSB):** `https://data.ssb.no/api/pxwebapi/v2`
 - **Statistics Sweden (SCB):** `https://statistikdatabasen.scb.se/api/v2`
 
@@ -43,11 +46,13 @@ generic-pxweb-v2-skill/
 ## Installation
 
 ### Claude.ai
+
 1. Download or create a ZIP of this folder
 2. Go to **Settings > Features > Skills**
 3. Upload the ZIP file
 
 ### Claude Code
+
 ```bash
 cp -r generic-pxweb-v2-skill ~/.claude/skills/generic-pxweb-v2-skill
 ```
@@ -55,7 +60,8 @@ cp -r generic-pxweb-v2-skill ~/.claude/skills/generic-pxweb-v2-skill
 ## MCP servers
 
 For Claude to call the API directly, you need an MCP server:
-- **@jarib/pxweb-mcp** (https://www.npmjs.com/package/@jarib/pxweb-mcp) — open source, works with any PxWeb installation
+
+- **@jarib/pxweb-mcp** (https://www.npmjs.com/package/@jarib/pxweb-mcp) — open source, works with any PxWeb v2 installation
 - Or build your own with FastMCP or similar
 
 ## License
