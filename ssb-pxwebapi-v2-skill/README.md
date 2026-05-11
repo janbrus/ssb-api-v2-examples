@@ -4,7 +4,7 @@ En [Claude Skill](https://support.claude.com/en/articles/12512180-use-skills-in-
 
 ## Hva skillen gjør
 
-- Guider AI-assisteneten gjennom riktig arbeidsflyt: søk → metadata → query → presenter
+- Guider AI-assistenten gjennom riktig arbeidsflyt: søk → metadata → query → presenter
 - Dekker alle endepunkter i PxWebApi v2 (tabeller, metadata, kodelister, lagrede spørringer, config)
 - Håndterer kodelister og aggregeringer (fylker, kommunesammenslåinger, aldersgrupper)
 - Støtter norsk og engelsk

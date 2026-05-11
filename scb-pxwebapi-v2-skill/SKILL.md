@@ -1,5 +1,5 @@
 ---
-name: scb-pxweb-v2
+name: scb-pxwebapi-v2
 description: >
   Svensk offentlig statistik från SCB via PxWebApi v2. Använd ALLTID när någon frågar om
   svenska siffror, statistik, befolkning, KPI, inflation, arbetslöshet, löner, priser,
@@ -110,7 +110,7 @@ Responsstrukturen för varje träff inkluderar: `id`, `label`, `description`, `u
 När användaren nämner en kommun du inte kan koden till — wildcards i valueCodes matchar bara *koder*, inte kommunnamn. Strategi:
 
 1. Sök efter kommunnamnet i API:et — sökningen letar i variabelvärden och bekräftar att kommunen finns
-2. Hämta metadata för en relevant tabell (t.ex. BefolkningNy) — scanna `category.label` i Region-dimensionen för kommunnamnet och hitta koden
+2. Hämta metadata för en relevant tabell (t.ex. TAB638) — scanna `category.label` i Region-dimensionen för kommunnamnet och hitta koden
 3. Alternativt: använd wildcard på länskoden (t.ex. `01*` för Stockholms län) och identifiera kommunen i resultaten
 4. SCB:s standardkoder för kommuner/län följer SKR:s 4-siffriga kommunkoder (de två första = länskod)
 
@@ -130,7 +130,7 @@ Metadata returneras i json-stat2-format (Dataset-schema) — se `references/json
   - `extension.eliminationValueCode` — Vilken kod som används vid eliminering
   - `extension.codelists` — Tillgängliga kodlistor för variabeln
 - **`extension`-objekt (rot)** — `firstPeriod`, `lastPeriod`, `discontinued`, `contact`
-- **`role`-objekt** — Vilka variabler som har roll som `time`, `geo`, eller `metric`
+- **`role`-objekt** — Vilka variabler som har roll som `time`, `geo`, eller `metric`. **Börja analysen här:** `role.metric` visar vad som mäts (hos SCB: `ContentsCode` — kontrollera `category.unit` för enhet/decimaler), `role.time` är tidsdimensionen, `role.geo` är geografi. **Om `role.geo` saknas, anta att data gäller hela Sverige** — fråga inte användaren. Övriga variabler i `id` är nedbrytningsdimensioner (kön, ålder, näringsgren m.m.).
 - **`value`-array** — Platt array med alla datavärden i row-major order (se `references/json-stat2.md` för indexformel)
 
 **Viktiga regler om metadata:**
@@ -181,7 +181,7 @@ Variabler med `elimination: true` kan uteslutas från `selection`-arrayen.
 #### GET (enklare frågor, delbara URL:er)
 
 ```
-GET /tables/{id}/data?valuecodes[Region]=0180&valuecodes[Tid]=top(5)&outputFormat=json-stat2
+GET /tables/{id}/data?valueCodes[Region]=0180&valueCodes[Tid]=top(5)&outputFormat=json-stat2
 ```
 
 #### Outputformat
@@ -236,7 +236,7 @@ POST /savedqueries
 Content-Type: application/json
 
 {
-  "tableId": "BefolkningNy",
+  "tableId": "TAB638",
   "language": "sv",
   "selection": {
     "selection": [
@@ -288,14 +288,14 @@ Både metadata och data returneras som **json-stat2** som standard (Dataset-sche
 
 ```
 1. GET /tables?query=folkmängd
-2. GET /tables/BefolkningNy/metadata
-3. POST /tables/BefolkningNy/data
+2. GET /tables/TAB638/metadata
+3. POST /tables/TAB638/data
    { "selection": [
        { "variableCode": "Region", "valueCodes": ["0180"] },
        { "variableCode": "ContentsCode", "valueCodes": ["BE0101N1"] },
        { "variableCode": "Tid", "valueCodes": ["top(1)"] }
    ]}
-→ "Per 31 december 2025 hade Stockholm N invånare (Källa: SCB, tabell BefolkningNy)"
+→ "Per 31 december 2025 hade Stockholm N invånare (Källa: SCB, tabell TAB638)"
 ```
 
 ### "KPI senaste 5 åren, månadsvis"
@@ -314,14 +314,14 @@ Både metadata och data returneras som **json-stat2** som standard (Dataset-sche
 
 ```
 1. GET /tables?query=population&lang=en
-2. GET /tables/BefolkningNy/metadata?lang=en
-3. POST /tables/BefolkningNy/data?lang=en
+2. GET /tables/TAB638/metadata?lang=en
+3. POST /tables/TAB638/data?lang=en
    { "selection": [
        { "variableCode": "Region", "valueCodes": ["00"] },
        { "variableCode": "ContentsCode", "valueCodes": ["BE0101N1"] },
        { "variableCode": "Tid", "valueCodes": ["top(1)"] }
    ]}
-→ "As of 31 December 2025, Sweden had N inhabitants (Source: Statistics Sweden, table BefolkningNy)"
+→ "As of 31 December 2025, Sweden had N inhabitants (Source: Statistics Sweden, table TAB638)"
 ```
 
 ---

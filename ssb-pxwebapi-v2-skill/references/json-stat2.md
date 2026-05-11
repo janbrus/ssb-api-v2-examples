@@ -30,7 +30,7 @@ Både metadata (`/tables/{id}/metadata`) og data (`/tables/{id}/data`) returnere
 - **`size`** — Antall verdier per variabel (i samme rekkefølge som `id`)
 - **`value`** — Flat array med alle dataverdier lagret i **row-major order** (siste dimensjon i `id` varierer raskest, første varierer saktest — samme konvensjon som C/NumPy). Indeksen beregnes fra `id`, `size` og `dimension.{var}.category.index`: for `size = [s₀, s₁, …, sₙ]` og kategori-indekser `(i₀, i₁, …, iₙ)` er flat-indeksen `i₀·(s₁·s₂·…·sₙ) + i₁·(s₂·…·sₙ) + … + iₙ`.
 - **`dimension`** — Detaljert info per variabel med koder (`category.index`), navn (`category.label`), enheter (`category.unit`) og metadata (`extension`)
-- **`role`** — Hvilke variabler som har rolle som `time`, `geo` eller `metric`
+- **`role`** — Hvilke variabler som har rolle som `time`, `geo` eller `metric`. **Start analyse her:** `role.metric` viser hva som måles (sjekk `dimension.{metric}.category.unit` for enhet/desimaler), `role.time` er tidsdimensjonen, `role.geo` er geografi. Hvis `role.geo` mangler, gjelder dataene typisk hele landet/totalen — ikke spør brukeren. Variabler som er i `id` men ikke i `role` er nedbrytningsdimensjoner.
 - **`status`** — Markerer spesielle verdier. Nøkkelen er indeks i value-arrayet. SSB bruker:
   - `"."` = ikke mulig å oppgi tall
   - `".."` = tallgrunnlag mangler

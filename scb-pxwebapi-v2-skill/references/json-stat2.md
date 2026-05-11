@@ -30,6 +30,6 @@ Både metadata (`/tables/{id}/metadata`) och data (`/tables/{id}/data`) returner
 - **`size`** — Antal värden per variabel (samma ordning som `id`)
 - **`value`** — Platt array med alla datavärden, lagrad i **row-major order** (sista dimensionen i `id` varierar snabbast, första varierar långsammast — samma konvention som C/NumPy). För `size = [s₀, s₁, …, sₙ]` och kategoriindex `(i₀, i₁, …, iₙ)` är plattindex = `i₀·(s₁·s₂·…·sₙ) + i₁·(s₂·…·sₙ) + … + iₙ`.
 - **`dimension`** — Detaljerad info per variabel: koder (`category.index`), etiketter (`category.label`), enheter (`category.unit`), metadata (`extension`)
-- **`role`** — Vilka variabler som har roll som `time`, `geo` eller `metric`
+- **`role`** — Vilka variabler som har roll som `time`, `geo` eller `metric`. **Börja analysen här:** `role.metric` visar vad som mäts (kontrollera `dimension.{metric}.category.unit` för enhet/decimaler), `role.time` är tidsdimensionen, `role.geo` är geografi. Om `role.geo` saknas gäller data typiskt hela landet/totalen — fråga inte användaren. Variabler som finns i `id` men inte i `role` är nedbrytningsdimensioner.
 - **`status`** — Markerar specialvärden. Nyckeln är index i value-arrayen. Vanliga symboler: `"."` (ej tillämpligt), `".."` (uppgift saknas), `":"` (konfidentiellt). Exakta symboler kan variera mellan leverantörer.
 - **`extension`** — Leverantörsspecifik metadata; vanliga fält är `firstPeriod`, `lastPeriod`, `discontinued`, kontakter.

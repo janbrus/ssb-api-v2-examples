@@ -78,7 +78,7 @@ Tabell 12880 er unik fordi den inneholder SSBs egne prognoser for makroøkonomis
 
 | ID    | Tittel                                                                | Frekvens | Typisk bruk                                                                                                              |
 | ----- | --------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------ |
-| 03068 | Skattepliktig inntekt, fradrag og skatt, bosatte 17+ år, gjennomsnitt | Årlig    | Gjennomsnittlig bruttoinntekt, lønn, fradrag og skatt  personer per kommune/fylke (fra 1993) |
+| 03068 | Skattepliktig inntekt, fradrag og skatt, bosatte 17+ år, gjennomsnitt | Årlig    | Gjennomsnittlig bruttoinntekt, lønn, fradrag og skatt for personer per kommune/fylke (fra 1993) |
 
 ---
 

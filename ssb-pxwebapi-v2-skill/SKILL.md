@@ -1,7 +1,7 @@
 ---
 name: ssb-pxwebapi-v2
 description: >
-  Norsk offentlig statistikk fra SSB via PxWebApi v2. Bruk ALLTID når noen spør om
+  Norsk offisiell statistikk fra SSB via PxWebApi v2. Bruk ALLTID når noen spør om
   norske tall, statistikk, befolkning, KPI, inflasjon, arbeidsledighet, lønn, priser,
   BNP, økonomi, handel, eksport, import, utdanning, helse, bolig, kommune- eller
   fylkesdata, eller nevner SSB, Statistisk sentralbyrå eller Statistikkbanken.
@@ -25,19 +25,19 @@ https://data.ssb.no/api/pxwebapi/v2
 
 PxWebApi v2 har disse endepunktene:
 
-| Endepunkt | Metode | Formål |
-|---|---|---|
-| `/tables` | GET | Søk og list tabeller |
-| `/tables/{id}` | GET | Hent info om én tabell |
-| `/tables/{id}/metadata` | GET | Hent metadata (variabler, koder, kodelister) |
-| `/tables/{id}/defaultselection` | GET | Hent tabellens forhåndsvalgte seleksjon |
-| `/tables/{id}/data` | GET / POST | Hent data med filtre |
-| `/codelists/{id}` | GET | Slå opp en kodeliste |
-| `/savedqueries` | POST | Opprett en lagret spørring |
-| `/savedqueries/{id}` | GET | Hent en lagret spørring |
-| `/savedqueries/{id}/data` | GET | Kjør en lagret spørring og hent data |
-| `/savedqueries/{id}/selection` | GET | Hent seleksjonen til en lagret spørring |
-| `/config` | GET | API-konfigurasjon (grenser, formater, språk) |
+| Endepunkt                       | Metode     | Formål                                       |
+| ------------------------------- | ---------- | -------------------------------------------- |
+| `/tables`                       | GET        | Søk og list tabeller                         |
+| `/tables/{id}`                  | GET        | Hent info om én tabell                       |
+| `/tables/{id}/metadata`         | GET        | Hent metadata (variabler, koder, kodelister) |
+| `/tables/{id}/defaultselection` | GET        | Hent tabellens forhåndsvalgte seleksjon      |
+| `/tables/{id}/data`             | GET / POST | Hent data med filtre                         |
+| `/codelists/{id}`               | GET        | Slå opp en kodeliste                         |
+| `/savedqueries`                 | POST       | Opprett en lagret spørring                   |
+| `/savedqueries/{id}`            | GET        | Hent en lagret spørring                      |
+| `/savedqueries/{id}/data`       | GET        | Kjør en lagret spørring og hent data         |
+| `/savedqueries/{id}/selection`  | GET        | Hent seleksjonen til en lagret spørring      |
+| `/config`                       | GET        | API-konfigurasjon (grenser, formater, språk) |
 
 Alle endepunkter aksepterer `lang`-parameter (`no`, `en`). Standard er `no`.
 
@@ -48,6 +48,7 @@ Alle endepunkter aksepterer `lang`-parameter (`no`, `en`). Standard er `no`.
 SSBs API støtter norsk (`lang=no`) og engelsk (`lang=en`). Alle tabelltitler, variabelnavn og verditekster finnes på begge språk.
 
 **Språkvalg:**
+
 - Hvis brukeren skriver på **norsk**: svar på norsk og bruk `lang=no` i API-kall
 - Hvis brukeren skriver på **engelsk**: svar på engelsk og bruk `lang=en` i API-kall
 - Tallformat tilpasses brukerens språk: norsk bruker mellomrom som tusenskilletegn og komma som desimalskille (1 234,5); engelsk bruker komma og punktum (1,234.5)
@@ -77,13 +78,13 @@ Bruk `GET /tables` med `query`-parameter.
 
 **Søkeparametre:**
 
-| Parameter | Type | Beskrivelse |
-|---|---|---|
-| `query` | string | Fritekst-søkeord |
-| `pastDays` | int | Begrens til tabeller oppdatert siste N dager |
-| `includeDiscontinued` | bool | Inkluder avsluttede serier (default: false) |
-| `pageNumber` | int | Sidenummer for paginering |
-| `pageSize` | int | Antall treff per side |
+| Parameter             | Type   | Beskrivelse                                  |
+| --------------------- | ------ | -------------------------------------------- |
+| `query`               | string | Fritekst-søkeord                             |
+| `pastDays`            | int    | Begrens til tabeller oppdatert siste N dager |
+| `includeDiscontinued` | bool   | Inkluder avsluttede serier (default: false)  |
+| `pageNumber`          | int    | Sidenummer for paginering                    |
+| `pageSize`            | int    | Antall treff per side                        |
 
 **Tips for gode søk:**
 
@@ -132,7 +133,7 @@ Metadata returneres i json-stat2-format (Dataset-schema). Fokuser på:
   - `extension.eliminationValueCode` — Hvilken kode som brukes ved eliminering
   - `extension.codelists` — Tilgjengelige kodelister for variabelen
 - **`extension`-objekt (rot)** — `firstPeriod`, `lastPeriod`, `discontinued`, `contact`, og PX-metadata som `subject-code`, `subject-area`
-- **`role`-objekt** — Hvilke variabler som har rolle som `time`, `geo`, eller `metric`
+- **`role`-objekt** — Hvilke variabler som har rolle som `time`, `geo`, eller `metric`. **Start analysen her:** `role.metric` viser hva som måles (hos SSB: `ContentsCode` / "statistikkvariabel" — sjekk `category.unit` for enhet/desimaler), `role.time` er tidsdimensjonen, `role.geo` er geografi. **Hvis `role.geo` mangler, anta at dataene gjelder hele Norge** — ikke spør brukeren. Øvrige variabler i `id` er nedbrytningsdimensjoner (kjønn, alder, næring osv.).
 - **`link.describedby`** — Kobling til SSBs Klass (klassifikasjoner) og VarDok (variabeldefinisjoner) via URN-er (se egen seksjon nedenfor)
 
 **Viktige regler om metadata:**
@@ -186,21 +187,21 @@ Variabler med `elimination: true` kan utelates fra `selection`-arrayet.
 #### GET (enklere spørringer, delbare URL-er)
 
 ```
-GET /tables/{id}/data?valuecodes[Region]=0301&valuecodes[Tid]=top(5)&codelist[Region]=agg_KommFylker&outputFormat=json-stat2
+GET /tables/{id}/data?valueCodes[Region]=F-03&valueCodes[Tid]=top(5)&codelist[Region]=agg_KommFylker&outputFormat=json-stat2
 ```
 
 GET-varianten er ideell for å lage URL-er som kan deles direkte. Se `references/codelists-and-filters.md` for `outputValues`-parameter ved bruk av grupperinger.
 
 #### Outputformater
 
-| Format | `outputFormat`-verdi | Bruk |
-|---|---|---|
-| json-stat2 | `json-stat2` | Standard, maskinlesbar, rik metadata |
-| CSV | `csv` | Enkelt tabulært format |
-| Excel | `xlsx` | For sluttbrukere |
-| HTML | `html` | Tabell for visning |
-| PX | `px` | Tradisjonelt PX-format |
-| JSON-PX | `json-px` | JSON-variant av PX |
+| Format     | `outputFormat`-verdi | Bruk                                 |
+| ---------- | -------------------- | ------------------------------------ |
+| json-stat2 | `json-stat2`         | Standard, maskinlesbar, rik metadata |
+| CSV        | `csv`                | Enkelt tabulært format               |
+| Excel      | `xlsx`               | For sluttbrukere                     |
+| HTML       | `html`               | Tabell for visning                   |
+| PX         | `px`                 | Tradisjonelt PX-format               |
+| JSON-PX    | `json-px`            | JSON-variant av PX                   |
 
 NB: `parquet` er definert i API-specen men ikke implementert ennå.
 
@@ -260,6 +261,7 @@ Content-Type: application/json
 ```
 
 Returnerer en ID og lenke. Data kan hentes med:
+
 ```
 GET /savedqueries/{id}/data
 ```
@@ -280,6 +282,7 @@ json-stat2-metadata inneholder URN-er under `link.describedby` som kobler variab
 
 **Klassifikasjoner (Klass):**
 URN-er på formen `"urn:ssb:classification:klass:131"` peker til SSBs system for klassifikasjoner og kodelister. Tallet til slutt er klassifikasjons-ID. Omskrives til Klass API:
+
 - `https://data.ssb.no/api/klass/v1/classifications/131.json`
 
 Eksempel: `"urn:ssb:classification:klass:691"` → `https://data.ssb.no/api/klass/v1/classifications/691.json`
@@ -288,6 +291,7 @@ Klass er nyttig for fullstendige kodeverk med historikk, korrespondansetabeller 
 
 **Variabeldefinisjoner (VarDok):**
 URN-er på formen `"urn:ssb:conceptvariable:vardok:3380"` peker til SSBs variabeldefinisjoner. Tallet til slutt er variabel-ID. Omskrives til:
+
 - Norsk: `https://www.ssb.no/a/metadata/conceptvariable/vardok/3380/nb`
 - Engelsk: `https://www.ssb.no/a/metadata/conceptvariable/vardok/3380/en`
 
@@ -342,7 +346,7 @@ VarDok gir definisjoner, avgrensninger og bakgrunnsinformasjon for statistiske b
 3. POST /tables/14700/data
    { "selection": [
        { "variableCode": "ContentsCode", "valueCodes": ["KpiIndMnd"] },
-       { "variableCode": "Tid", "valueCodes": ["top(60)"] }
+       { "variableCode": "Tid", "valueCodes": ["top(61)"] }
    ]}
 → Tabell med månedlig KPI (2025=100), med kilde. NB: Både 03013 og 03014 er avsluttet — bruk 14700.
 ```
@@ -366,13 +370,16 @@ VarDok gir definisjoner, avgrensninger og bakgrunnsinformasjon for statistiske b
 
 Tidsserier med kommunedata bør bruke kodeliste `agg_KommSummer` for å håndtere kommunesammenslåinger og gi konsistente tall over tid.
 
+NB: `agg_KommSummer` krever `K-`-prefiks på koden. Bruk `outputValues[Region]=aggregated` for å få summerte verdier.
+
 ```
-GET /tables/07459/data?valuecodes[Region]=0301&codelist[Region]=agg_KommSummer&valuecodes[ContentsCode]=Personer1&valuecodes[Tid]=top(10)&outputFormat=json-stat2
+GET /tables/07459/data?valueCodes[Region]=K-0301&codelist[Region]=agg_KommSummer&outputValues[Region]=aggregated&valueCodes[ContentsCode]=Personer1&valueCodes[Tid]=top(10)&outputFormat=json-stat2
 ```
 
 Full URL:
+
 ```
-https://data.ssb.no/api/pxwebapi/v2/tables/07459/data?valuecodes[Region]=0301&codelist[Region]=agg_KommSummer&valuecodes[ContentsCode]=Personer1&valuecodes[Tid]=top(10)&outputFormat=json-stat2
+https://data.ssb.no/api/pxwebapi/v2/tables/07459/data?valueCodes[Region]=K-0301&codelist[Region]=agg_KommSummer&outputValues[Region]=aggregated&valueCodes[ContentsCode]=Personer1&valueCodes[Tid]=top(10)&outputFormat=json-stat2
 ```
 
 ### "Eksporter boligpriser som Excel"
