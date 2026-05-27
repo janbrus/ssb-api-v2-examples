@@ -27,13 +27,13 @@ Tabell 07459 er den mest brukte befolkningstabellen. Den dekker alle kommuner, f
 
 ## Priser og inflasjon
 
-| ID    | Tittel                                                | Frekvens    | Typisk bruk                                                   |
-| ----- | ----------------------------------------------------- | ----------- | ------------------------------------------------------------- |
-| 14700 | Konsumprisindeks (KPI), etter vare- og tjenestegruppe | Månedlig    | Total KPI og prisvekst per varegruppe (erstatter 03013/03014) |
-| 14702 | KPI, KPI-JA og KPI-JAE, etter leveringssektor         | Månedlig    | KPI fordelt på leveringssektor                                |
-| 14704 | Justert KPI (KPI-JA og KPI-JAE), hovedgrupper         | Månedlig    | Kjerneinflasjon — Norges Banks foretrukne inflasjonsmål       |
-| 09654 | Priser på drivstoff                                   | Månedlig    | Bensin- og dieselpriser per liter                             |
-| 09387 | Kraftpris, nettleie og avgifter for husholdninger     | Kvartalsvis | Strømpriser for husholdninger                                 |
+| ID    | Tittel                                                | Frekvens    | Typisk bruk                                                                        |
+| ----- | ----------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------- |
+| 14700 | Konsumprisindeks (KPI), etter vare- og tjenestegruppe | Månedlig    | Total KPI og prisvekst per varegruppe (erstatter 03013/03014)                      |
+| 14702 | KPI, KPI-JA og KPI-JAE, etter leveringssektor         | Månedlig    | KPI fordelt på leveringssektor                                                     |
+| 14704 | Justert KPI (KPI, KPI-JA og KPI-JAE), hovedgrupper    | Månedlig    | Kjerneinflasjon - underliggende proisvekst — Norges Banks foretrukne inflasjonsmål |
+| 09654 | Priser på drivstoff                                   | Månedlig    | Bensin- og dieselpriser per liter                                                  |
+| 09387 | Kraftpris, nettleie og avgifter for husholdninger     | Kvartalsvis | Strømpriser for husholdninger                                                      |
 
 KPI (14700): Basisår 2025=100. `ContentsCode` "KpiIndMnd" = indeks, "KpiMndEnd662" = 12-måneders endring. Både 03013 og 03014 er avsluttet. KPI-JAE (14704) er populært kalt kjerneinflasjon og brukes mye i pengepolitisk analyse.
 
@@ -41,44 +41,44 @@ KPI (14700): Basisår 2025=100. `ContentsCode` "KpiIndMnd" = indeks, "KpiMndEnd6
 
 ## Arbeid og lønn
 
-| ID    | Tittel                                                                        | Frekvens       | Typisk bruk                                                              |
-| ----- | ----------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------ |
-| 11658 | Yrkes- (4-siffer), kjønns- og aldersfordeling for lønnstakere, jobber og lønn | Kvartalsvis    | Lønn og sysselsetting per yrke, kjønn og alder (4-siffer NYK)            |
-| 11418 | Yrkesfordelt månedslønn, etter sektor og kjønn                                | Årlig          | Lønnsnivå per yrke, lønnsforskjeller                                     |
-| 11419 | Yrkesfordelt månedslønn, etter sektor og næring                               | Årlig          | Lønn per yrke og næring kombinert                                        |
-| 11420 | Utdanningsfordelt månedslønn, etter sektor og næring                          | Årlig          | Lønn etter utdanningsnivå                                                |
-| 11421 | Aldersfordelt månedslønn, etter sektor og næring                              | Årlig          | Lønn etter aldersgruppe                                                  |
-| 14378 | Utdanningsfordelt månedslønn, etter fullført utdanning                        | Årlig          | Lønn etter type fullført utdanning                                       |
-| 11654 | Lønnstakere, jobber, lønn og lønnsindeks, etter næring                        | Kvartalsvis    | Lønnsforhandling, lønnsutvikling                                         |
-| 11587 | Ledige stillinger, etter næring (sesongjustert)                               | Kvartalsvis    | Etterspørsel etter arbeidskraft                                          |
-| 13979 | Lønnstakere og jobber i utleie av arbeidskraft (næring 78.2)                  | Kvartalsvis    | Bemanningsbransjen, etter yrke og arbeidssted, fylkesnivå                |
-| 05111 | Personer, etter arbeidsstyrkestatus, kjønn og alder                           | Årlig          | Sysselsatte, arbeidsledige og personer utenfor arbeidsstyrken (fra 1972) |
-| 13470 | Næringsfordeling  blant sysselsatte                                           | Årlig (4. kv.) | Sysselsatte per næring (NACE 5-siffer) og kommune/fylke                  |
+| ID    | Tittel                                                                        | Frekvens       | Typisk bruk                                                               |
+| ----- | ----------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------- |
+| 11658 | Yrkes- (4-siffer), kjønns- og aldersfordeling for lønnstakere, jobber og lønn | Kvartalsvis    | Lønn og sysselsetting per yrke, kjønn og alder (4-siffer NYK)             |
+| 11418 | Yrkesfordelt månedslønn, etter sektor og kjønn                                | Årlig          | Lønnsnivå per yrke, lønnsforskjeller                                      |
+| 11419 | Yrkesfordelt månedslønn, etter sektor og næring                               | Årlig          | Lønn per yrke og næring kombinert                                         |
+| 11420 | Utdanningsfordelt månedslønn, etter sektor og næring                          | Årlig          | Lønn etter utdanningsnivå                                                 |
+| 11421 | Aldersfordelt månedslønn, etter sektor og næring                              | Årlig          | Lønn etter aldersgruppe                                                   |
+| 14378 | Utdanningsfordelt månedslønn, etter fullført utdanning                        | Årlig          | Lønn etter type fullført utdanning                                        |
+| 11654 | Lønnstakere, jobber, lønn og lønnsindeks, etter næring                        | Kvartalsvis    | Lønnsforhandling, lønnsutvikling                                          |
+| 11587 | Ledige stillinger, etter næring (sesongjustert)                               | Kvartalsvis    | Etterspørsel etter arbeidskraft                                           |
+| 13979 | Lønnstakere og jobber i utleie av arbeidskraft (næring 78.2)                  | Kvartalsvis    | Bemanningsbransjen, etter yrke og arbeidssted, fylkesnivå                 |
+| 05111 | Personer, etter arbeidsstyrkestatus, kjønn og alder                           | Årlig          | Sysselsatte, arbeidsledige og personer utenfor arbeidsstyrken (fra 1972-) |
+| 13470 | Næringsfordeling  blant sysselsatte                                           | Årlig (4. kv.) | Sysselsatte per næring (NACE 5-siffer) og kommune/fylke                   |
 
 ---
 
 ## Nasjonalregnskap og makroøkonomi
 
-| ID    | Tittel                                                   | Frekvens    | Typisk bruk                                              |
-| ----- | -------------------------------------------------------- | ----------- | -------------------------------------------------------- |
-| 09190 | Makroøkonomiske hovedstørrelser (ujustert/sesongjustert) | Kvartalsvis | BNP, konsum, investeringer, eksport/import (mest brukte) |
-| 09189 | Makroøkonomiske hovedstørrelser                          | Årlig       | BNP, konsum, investeringer (årlig, fra 1970)             |
-| 09842 | BNP og andre hovedstørrelser, per innbygger              | Årlig       | BNP per innbygger, velstandsmål                          |
-| 12880 | Konjunkturtendensene — regnskap og prognoser             | Kvartalsvis | Prognoser for BNP, sysselsetting, renter m.m. 4 år frem  |
-| 09672 | Drifts- og kapitalregnskap, løpende priser               | Kvartalsvis | Utenriksregnskap, driftsbalanse, kapitalstrømmer         |
-| 10701 | NIBOR og Norges Banks foliorente                         | Månedlig    | Pengemarkedsrenter, styringsrente                        |
-| 10748 | Renter på nye boliglån, etter utlånstype og bindingstid  | Månedlig    | Boliglånsrenter, utvalg banker/kredittforetak            |
-| 07200 | Renter på utestående utlån, etter långiver og sektor     | Kvartalsvis | Utlånsrenter totaltelling, historisk fra 1979            |
+| ID    | Tittel                                                   | Frekvens                       | Typisk bruk                                                                    |
+| ----- | -------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------ |
+| 09190 | Makroøkonomiske hovedstørrelser (ujustert/sesongjustert) | Kvartalsvis                    | BNP, konsum, investeringer, eksport/import (mest brukte)                       |
+| 09189 | Makroøkonomiske hovedstørrelser                          | Årlig                          | BNP, konsum, investeringer (årlig, fra 1970-)                                  |
+| 09842 | BNP og andre hovedstørrelser, per innbygger              | Årlig                          | BNP per innbygger, velstandsmål                                                |
+| 12880 | Konjunkturtendensene — regnskap og prognoser             | Årlig, Kvartalsvis oppdatering | Prognoser for BNP, sysselsetting, renter m.m. 4 år frem, tall tilbake til 1991 |
+| 09672 | Drifts- og kapitalregnskap, løpende priser               | Kvartalsvis                    | Utenriksregnskap, driftsbalanse, kapitalstrømmer                               |
+| 10701 | NIBOR og Norges Banks foliorente                         | Månedlig                       | Pengemarkedsrenter, styringsrente                                              |
+| 10748 | Renter på nye boliglån, etter utlånstype og bindingstid  | Månedlig                       | Boliglånsrenter, utvalg banker/kredittforetak                                  |
+| 07200 | Renter på utestående utlån, etter långiver og sektor     | Kvartalsvis                    | Utlånsrenter totaltelling, historisk fra 1979-                                 |
 
-Tabell 12880 er unik fordi den inneholder SSBs egne prognoser for makroøkonomiske størrelser flere år fremover.
+Tabell 12880 er unik fordi den inneholder SSBs egne prognoser for makroøkonomiske størrelser fire år fremover.
 
 ---
 
 ## Inntekt og skatt
 
-| ID    | Tittel                                                                | Frekvens | Typisk bruk                                                                                                              |
-| ----- | --------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------ |
-| 03068 | Skattepliktig inntekt, fradrag og skatt, bosatte 17+ år, gjennomsnitt | Årlig    | Gjennomsnittlig bruttoinntekt, lønn, fradrag og skatt for personer per kommune/fylke (fra 1993) |
+| ID    | Tittel                                                                | Frekvens | Typisk bruk                                                                                      |
+| ----- | --------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------ |
+| 03068 | Skattepliktig inntekt, fradrag og skatt, bosatte 17+ år, gjennomsnitt | Årlig    | Gjennomsnittlig bruttoinntekt, lønn, fradrag og skatt for personer per kommune/fylke (fra 1993-) |
 
 ---
 
@@ -107,14 +107,14 @@ Tabell 12880 er unik fordi den inneholder SSBs egne prognoser for makroøkonomis
 
 ## Byggekostnader
 
-| ID    | Tittel                                           | Frekvens    | Typisk bruk                             |
-| ----- | ------------------------------------------------ | ----------- | --------------------------------------- |
-| 08651 | Byggekostnadsindeks for bustader i alt           | Månedlig    | Samlet byggekostnadsutvikling           |
-| 08653 | Byggekostnadsindeks for einebustad av tre        | Månedlig    | Byggekostnader eneboliger               |
-| 08655 | Byggekostnadsindeks for bustadblokk              | Månedlig    | Byggekostnader boligblokk               |
-| 04534 | Byggekostnadsindeks for røyrleggjararbeid        | Månedlig    | Rørleggerarbeid, kontor/forretningsbygg |
-| 08662 | Byggekostnadsindeks for veganlegg                | Kvartalsvis | Byggekostnader veibygging               |
-| 08663 | Kostnadsindeks for drift og vedlikehold av veger | Kvartalsvis | Drifts- og vedlikeholdskostnader vei    |
+| ID    | Tittel                                           | Frekvens    | Typisk bruk                                                                   |
+| ----- | ------------------------------------------------ | ----------- | ----------------------------------------------------------------------------- |
+| 08651 | Byggekostnadsindeks for bustader i alt           | Månedlig    | Samlet byggekostnadsutvikling                                                 |
+| 08653 | Byggekostnadsindeks for einebustad av tre        | Månedlig    | Byggekostnader eneboliger                                                     |
+| 08655 | Byggekostnadsindeks for bustadblokk              | Månedlig    | Byggekostnader boligblokk                                                     |
+| 04534 | Byggekostnadsindeks for røyrleggjararbeid        | Månedlig    | Rørleggerarbeid, kontor/forretningsbygg                                       |
+| 08662 | Byggekostnadsindeks for veganlegg                | Kvartalsvis | Byggekostnader veibygging                                                     |
+| 08663 | Kostnadsindeks for drift og vedlikehold av veger | Kvartalsvis | Drifts- og vedlikeholdskostnader vei, snøbrøyting |
 
 ---
 

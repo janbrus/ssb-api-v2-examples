@@ -17,11 +17,13 @@ En [Claude Skill](https://support.claude.com/en/articles/12512180-use-skills-in-
 ssb-pxwebapi-v2/
 ├── SKILL.md                              # Hovedinstruksjoner og arbeidsflyt
 ├── README.md                             # Denne filen
-├── CLAUDE.md                             # Veiledning for Claude Code ved redigering av selve skillen
 └── references/
-    ├── json-stat2.md                     # json-stat2 format-spesifikasjon (Dataset, row-major, status-koder — også gyldig for Eurostat, World Bank)
+    ├── json-stat2.md                     # json-stat2 format-spesifikasjon (Dataset, row-major, status-koder, extension på dataset- og variabel-nivå — også gyldig for Eurostat, World Bank)
     ├── api-details.md                    # SSB-spesifikk driftsinformasjon (publiseringstider, grenser, lisens)
-    ├── codelists-and-filters.md          # Kodelister, filtersyntaks, outputValues
+    ├── codelists-and-filters.md          # Kodelister (inkl. KPI/COICOP-grupperinger), filtersyntaks, outputValues
+    ├── search-syntax.md                  # Lucene-basert søkesyntaks for /tables?query=
+    ├── klass-vardok.md                   # Kobling til SSBs Klass (klassifikasjoner) og VarDok (variabeldefinisjoner) via URN-er
+    ├── output-formats.md                 # json-stat2, csv, xlsx, html, px, parametre for pivotering og etiketter
     ├── common-tables.md                  # Kurert liste over vanlige tabeller
     └── troubleshooting.md                # Feilsøking og standardtegn
 ```
@@ -54,7 +56,7 @@ Følg plattformens dokumentasjon for å legge til tilpassede instruksjoner eller
 
 Skillen er ren kunnskap — den gir AI-assistenten *veiledning* for hvordan PxWebApi v2 fungerer. For at Claude faktisk skal kunne *kalle* API-et, trenger du også verktøy. Alternativer:
 
-- **@jarib/pxweb-mcp** (https://www.npmjs.com/package/@jarib/pxweb-mcp) — open source MCP-server for PxWeb-APIer, fungerer med SSB og andre statistikkbyråer som bruker PxWeb V2
+- **@jarib/pxweb-mcp** (https://www.npmjs.com/package/@jarib/pxweb-mcp) — open source MCP-server for PxWebApi-er, fungerer med SSB, SCB og andre statistikkbyråer som bruker PxWeb V2
 - **TRYs MCP-server** (https://tools.try.no/ssb-mcp) — ferdig hosted MCP-server med `ssb_search`, `ssb_get_data` m.fl.
 - **Egen MCP-server** — bygg din egen med FastMCP eller lignende
 - **Direkte API-kall** — skillen beskriver endepunktene slik at Claude eller andre kan konstruere korrekte URL-er

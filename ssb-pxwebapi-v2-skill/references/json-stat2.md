@@ -36,4 +36,6 @@ Både metadata (`/tables/{id}/metadata`) og data (`/tables/{id}/data`) returnere
   - `".."` = tallgrunnlag mangler
   - `":"` = konfidensielt (vises ikke av hensyn til identifisering)
   - Andre leverandører kan bruke andre symboler — sjekk responsen.
-- **`extension`** — Leverandørspesifikk metadata. Hos SSB: `firstPeriod`, `lastPeriod`, `discontinued`, kontaktpersoner, `subject-code`, `subject-area`, `nextUpdate`.
+- **`extension`** — Leverandørspesifikk metadata. I json-stat2 kan `extension` forekomme på **to nivåer**:
+  - **Dataset/rot-nivå** (`<root>.extension`) — metadata om hele tabellen. Hos SSB: `firstPeriod`, `lastPeriod`, `discontinued`, `nextUpdate`, `contact`, og PX-metadata under `extension.px` med `subject-code`, `subject-area`, `decimals`, `heading`/`stub` (default-pivotering) og `contents` — en kort tabelltittel (f.eks. "07459: Befolkning,") som er nyttig som utgangspunkt for å bygge en presentasjonstittel utvidet med valgte variabler og tidsperiode.
+  - **Variabel-nivå** (`dimension.{var}.extension`) — metadata om den enkelte dimensjonen. Hos SSB: `elimination` (kan variabelen utelates?), `eliminationValueCode`, `show`, `codelists` (tilgjengelige `agg_`/`vs_`-kodelister). For statistikkvariabelen (`ContentsCode`) i tillegg: `measuringType` (Stock/Flow/Average), `priceType` (Current/Fixed/NotApplicable), `adjustment` (sesongjustering), `refperiod` (referansetidspunkt) og `alternativeText` — alle indeksert per ContentsCode-verdi.

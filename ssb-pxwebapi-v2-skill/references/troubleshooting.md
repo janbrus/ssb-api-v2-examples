@@ -19,6 +19,7 @@ Ugyldig forespørsel. Sjekk `detail`-feltet i Problem-responsen.
 - **Manglende obligatorisk variabel** — Variabel med `elimination: false` mangler fra selection.
 - **Ugyldig kodeliste-ID** — Kodelisten finnes ikke for denne variabelen.
 - **Blanding av filteruttrykk og koder** — `top()`, `from()`, `range()` skal brukes alene i valueCodes.
+- **Manglende `OutputFormatParams` i `POST /savedqueries`** — feltet er obligatorisk i request-bodyen selv om verdien er tom. Send `"outputFormatParams": []` hvis du ikke trenger noen. Symptom: `400 — "The OutputFormatParams field is required."`
 
 **Løsning:** Hent metadata på nytt, sammenlign variabelkoder og verdikoder nøyaktig.
 

@@ -4,6 +4,17 @@ Komplett referanse for kodelister og filteruttrykk i PxWebApi v2.
 
 ---
 
+## Finne kommunekoder
+
+Når brukeren nevner en kommune du ikke kjenner koden til — wildcards i `valueCodes` matcher bare *koder*, ikke kommunenavn. Strategi:
+
+1. Søk etter kommunenavnet med `/tables?query=…` — API-et søker i variabelverdier og bekrefter at kommunen finnes
+2. Hent metadata for en relevant tabell (f.eks. 07459) — scan `category.label` i Region-dimensjonen for kommunenavnet og finn koden
+3. Alternativt: bruk wildcard på fylkeskoden (f.eks. `34*` for Innlandet, `345?` for å snevre inn) og identifiser kommunen i resultatene
+4. Klass API har komplett kommuneklassifikasjon: `https://data.ssb.no/api/klass/v1/classifications/131.json`
+
+---
+
 ## Kodelister
 
 ### To typer kodelister
@@ -124,6 +135,8 @@ Returnerer:
 | `agg_TiAarigGruppering` | Alder | 10-årige aldersgrupper (0-9, 10-19, ...) |
 | `agg_RegHFRHF` | Region | Helseforetaksregioner |
 | `agg_Nace17` | NACE | 17 næringsgrupper |
+| `vs_CoiCop2018Kpi01` | VareTjenesteGrp | KPI: alle nivåer av varer og tjenester (COICOP 2018) — brukes i tabell 14700 |
+| `agg_CoiCop2018Kpi011` | VareTjenesteGrp | KPI: hovedgruppenivå i COICOP 2018 (12 hovedgrupper) — brukes i tabell 14700 |
 
 NB: Kodeliste-IDer varierer mellom tabeller. Sjekk alltid metadata for den aktuelle tabellen.
 
