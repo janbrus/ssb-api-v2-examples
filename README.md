@@ -2,6 +2,12 @@
 
  [**Hva er nytt i PxWebApi versjon 2**](nytt_i_v2.md) 
 
+**Skill for SSB PxWebApi v2**
+
+- [ssb-pxwebapi-v2-skill/](ssb-pxwebapi-v2-skill/) — En Skill som lærer Claude og andre AI-verktøy å bruke PxWebApi v2 mot SSB. Jeg har prøvd å tappe min kunnskap om dette til et AI-lesbart format.
+  Kan f.eks. brukes med MCP-server. Fungerer for flere enn Claude. Denne er bedre, og mye mer utfyllende enn Try sin. Se [ssb-pxwebapi-v2-skill/README.md](ssb-pxwebapi-v2-skill/README.md) for installasjon.
+- [ssb-chart-skill/](ssb-chart-skill/) — En skill for figurer og datavisualisering. Er ment å brukes sammen med ssb-pxwebapi-v2 skill Denne er bedre, og mye mer utfyllende enn Try sin. Se [ssb-pxwebapi-v2-skill/README.md](ssb-pxwebapi-v2-skill/README.md) for installasjon.
+
 **Jupyter notebooks**
 
 Til en viss grad viser rekkefølgen økende kompleksitet
@@ -22,19 +28,19 @@ Til en viss grad viser rekkefølgen økende kompleksitet
 
 [kpi_js_v2](kpi_js_v2.html) - Enkel KPI-figur med Highcharts, nytt basisår 2025
 
-**Skill for SSB PxWebApi v2**
-
-[ssb-pxwebapi-v2-skill/](ssb-pxwebapi-v2-skill/) — En Skill som lærer Claude og andre AI-verktøy å bruke PxWebApi v2 mot SSB. Kan f.eks. brukes med MCP-server. Fungerer for flere enn Claude. Denne er bedre, og mye mer utfyllende enn Try sin. Se [ssb-pxwebapi-v2-skill/README.md](ssb-pxwebapi-v2-skill/README.md) for installasjon.
 
 -----
 
 [Lag dynamisk URL](https://nesa.no/ssb/forenkle_url.html) Endre fra statisk til dynamisk tid i API v2 URL.
 
-[beta-bruker](beta-bruker.md) er en foreløpig oversettelse til norsk av en litt mangelfull og utdatert brukerveiledning.
-
-
+-----
 
 ## In English
+
+**Generic skill for PxWebApi v2**
+
+[pxwebapi-v2-generic-skill/](pxwebapi-v2-generic-skill/) — BETA: A Claude (AI) Skill to use PxWebApi v2 towards PxWebApi v2 installations using JSON-stat v2. Can be used in Claude and Claude Code, e.g. with MCP. Probably works for more than Claude. See [pxwebapi-v2-generic-skill/README.md](pxwebapi-v2-generic-skill/README.md) for installation.
+
 
 [**What's new in PxWebApi version 2**](new_in_v2.md)
 
@@ -44,7 +50,4 @@ Til en viss grad viser rekkefølgen økende kompleksitet
 
 [text-code-eng](text-code-api2-eng.ipynb) - Get both code and text in JSON-stat2 and Pandas - example with HS codes for goods from monthly foreign trade statistics
 
-**Generic skill for PxWebApi v2**
-
-[pxwebapi-v2-generic-skill/](pxwebapi-v2-generic-skill/) — BETA: A Claude (AI) Skill to use PxWebApi v2 against PxWebApi v2 installations using JSON-stat v2. Can be used in Claude and Claude Code, e.g. with MCP. Probably works for more than Claude. See [pxwebapi-v2-generic-skill/README.md](pxwebapi-v2-generic-skill/README.md) for installation.
 
