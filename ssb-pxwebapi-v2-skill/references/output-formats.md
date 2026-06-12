@@ -10,8 +10,9 @@ Standard er `json-stat2`. Velg annet format med `outputFormat`-parameter på `/t
 | HTML       | `html`               | Tabell for visning                   |
 | PX         | `px`                 | Tradisjonelt PX-format               |
 | JSON-PX    | `json-px`            | JSON-variant av PX                   |
+| Parquet    | `parquet`            | Kolonneformat for dataanalyse (pandas, DuckDB) |
 
-NB: `parquet` er definert i API-specen men ikke implementert ennå.
+`parquet` returneres som `application/octet-stream`. Sjekk `dataFormats` i `GET /config` for gjeldende formatliste.
 
 ## OutputFormatParams (kan kombineres)
 

@@ -158,7 +158,7 @@ GET /tables/07459/data?valueCodes[Region]=K-3103&valueCodes[Tid]=*&valueCodes[Co
 
 ## Filteruttrykk i valueCodes
 
-Disse uttrykkene kan brukes i `valueCodes`-arrayet (POST) eller som verdier i `valuecodes`-parameteren (GET).
+Disse uttrykkene kan brukes i `valueCodes`-arrayet (POST) eller som verdier i `valueCodes`-parameteren (GET).
 
 ### Funksjonsbaserte filtre
 
@@ -196,7 +196,9 @@ Formatet i valueCodes må matche tabellens `timeUnit`:
 | Annual | `YYYY` | `"2024"` |
 | Monthly | `YYYYMNN` | `"2024M06"` (juni 2024) |
 | Quarterly | `YYYYKN` | `"2024K2"` (Q2 2024) |
-| Weekly | `YYYYWNN` | `"2024W01"` |
+| Weekly | `YYYYUNN` | `"2024U01"` (uke 1, 2024) |
+
+NB: Tidskodene bruker norske bokstaver uavhengig av `lang`-parameter: `K` for kvartal og `U` for uke — ikke Q/W. Eksempel: tabell 03024 (ukentlig lakseeksport) har perioder som `2026U23`.
 
 ### Vanlige scenarier
 
@@ -218,7 +220,7 @@ Formatet i valueCodes må matche tabellens `timeUnit`:
 
 | Behov | valueCodes | Kommentar |
 |---|---|---|
-| Hele landet | `["0"]` | Koden "0" betyr "Hele landet" |
+| Hele landet | `["0"]` | Gjelder 07459 og mange andre tabeller, men er ikke universell — sjekk alltid `category.index` i metadata |
 | Oslo kommune | `["0301"]` | |
 | Bergen kommune | `["4601"]` | |
 | Alle i Vestland | `["46*"]` | Wildcard |

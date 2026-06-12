@@ -11,6 +11,8 @@ description: >
   "inflation in Norway", "housing prices Norway" or similar. Bruk denne fremfor
   websøk når svaret finnes i norsk offentlig statistikk. Dekker kodelister,
   lagrede spørringer og outputformater (json-stat2, csv, xlsx).
+metadata:
+  version: "1.1.0"
 ---
 
 # SSB PxWebApi v2 — Komplett guide
@@ -54,6 +56,17 @@ Alle endepunkter aksepterer `lang`-parameter (`no`, `en`). Standard er `no`.
 
 ---
 
+## Verktøyvalg / Tool selection
+
+API-et kan nås via to kanaler:
+
+- **MCP-verktøy fra `pxweb-mcp`** (npm: `@jarib/pxweb-mcp`) — bruk disse når de er tilkoblet *og dekker behovet*. Se `references/mcp-tools.md` for verktøytabell og begrensninger.
+- **Direkte HTTP** (curl via Bash eller tilsvarende) — bruk URL-strukturen under «Arbeidsflyt». POST-spørringer krever et verktøy med request-body-støtte.
+
+HTTP er eneste kanal for `/savedqueries`, `/tables/{id}/defaultselection`, `/config` og `outputFormatParams` — disse er ikke eksponert av MCP-serveren.
+
+---
+
 ## Språk / Language
 
 SSBs API støtter norsk (`lang=no`) og engelsk (`lang=en`). Alle tabelltitler, variabelnavn og verditekster finnes på begge språk.
@@ -82,6 +95,8 @@ Avklar før du kaller noe:
 - **Nedbrytning** — Kjønn, alder, næring, utdanningsnivå?
 
 Hvis brukeren er vag, still **ett** oppfølgingsspørsmål — ikke flere.
+
+Gjelder spørsmålet styringsrente, valutakurser, NOWA, statsgjeld/statsobligasjoner eller annen sentralbankdata: bruk `norges-bank-api`-skillen hvis den er tilgjengelig i miljøet — disse dataene ligger hos Norges Bank, ikke i Statistikkbanken.
 
 ### Steg 2: Søk etter tabell
 
@@ -117,27 +132,19 @@ Når brukeren nevner en kommune du ikke kjenner koden til, eller du trenger fylk
 
 Bruk `GET /tables/{id}/metadata` for å forstå tabellens struktur.
 
-Metadata returneres i json-stat2-format (Dataset-schema). Fokuser på:
+Metadata returneres i json-stat2-format (Dataset-schema) — full formatreferanse i `references/json-stat2.md`. Fokuser på:
 
-- **`id`-array** — Variabelnavnene (f.eks. `["Region", "Kjonn", "Alder", "ContentsCode", "Tid"]`)
-- **`size`-array** — Antall verdier per variabel
-- **`dimension`-objekt** — Detaljert info per variabel:
-  - `category.index` — Kodene og rekkefølgen (f.eks. `{"0301": 0, "1103": 1}`)
-  - `category.label` — Lesbare navn (f.eks. `{"0301": "Oslo"}`)
-  - `category.unit` — Enhet og desimaler (på ContentsCode)
-  - `extension.elimination` — Om variabelen kan utelates fra query (true = summeres automatisk alternativt en gitt verdi)
-  - `extension.eliminationValueCode` — Hvilken kode som brukes ved eliminering
-  - `extension.codelists` — Tilgjengelige kodelister for variabelen
-- **`extension`-objekt (rot)** — `firstPeriod`, `lastPeriod`, `discontinued`, `contact`, og PX-metadata under `extension.px`: `subject-code`, `subject-area`, `decimals`, `heading`/`stub` (default-pivotering), og `contents` — en kort tabelltittel (f.eks. "07459: Befolkning,") som er et godt utgangspunkt for å bygge presentasjonstittel ved å legge til valgte variabler og tidsperiode fra uttrekket
-- **`role`-objekt** — Hvilke variabler som har rolle som `time`, `geo`, eller `metric`. **Start analysen her:** `role.metric` viser hva som måles (hos SSB kalles denne variabelen "statistikkvariabel" på norsk og `ContentsCode` på engelsk — sjekk `category.unit` for enhet/desimaler), `role.time` er tidsdimensjonen, `role.geo` er geografi. **Hvis `role.geo` mangler, anta at dataene gjelder hele Norge** — ikke spør brukeren. Øvrige variabler i `id` er nedbrytningsdimensjoner (kjønn, alder, næring osv.).
+- **`id`-array** — Variabelnavnene (f.eks. `["Region", "Kjonn", "Alder", "ContentsCode", "Tid"]`); `size`-arrayet gir antall verdier per variabel
+- **`dimension`-objekt** — Per variabel: koder (`category.index`), lesbare navn (`category.label`), enhet og desimaler (`category.unit`, på ContentsCode), samt `extension` med `elimination`, `eliminationValueCode` og `codelists` (tilgjengelige kodelister)
+- **`extension`-objekt (rot)** — `firstPeriod`, `lastPeriod`, `discontinued`, `contact`, og PX-metadata under `extension.px`: `subject-code`, `subject-area`, `decimals`, `heading`/`stub` (default-pivotering), og `contents` (kort tabelltittel — brukes til tittelbygging i Steg 5)
+- **`role`-objekt** — **Start analysen her:** `role.metric` viser hva som måles (antall, prosent, NOK, indeks) — hos SSB heter variabelen "statistikkvariabel" på norsk og `ContentsCode` på engelsk; sjekk `category.unit` for enhet og desimaler. `role.time` er tidsdimensjonen, `role.geo` er geografi — **hvis `role.geo` mangler, anta at dataene gjelder hele Norge**, ikke spør brukeren. Øvrige variabler i `id` er nedbrytningsdimensjoner (kjønn, alder, næring osv.).
 - **`link.describedby`** — Kobling til SSBs Klass (klassifikasjoner) og VarDok (variabeldefinisjoner) via URN-er — se `references/klass-vardok.md`
 
 **Viktige regler om metadata:**
 
 - Variabler med `elimination: true` kan utelates — de summeres automatisk (enten til en forhåndsdefinert eliminasjonsverdi/sum, eller samtlige verdier aggregeres til én)
 - Variabler med `elimination: false` MÅ inkluderes i query. Tid og ContentsCode er alltid ikke-eliminerbare.
-- `ContentsCode` forteller hva som måles (antall, prosent, NOK, indeks) — sjekk `category.unit` for enhet og desimaler
-- Per statistikkvariabel kan `extension` inneholde: `measuringType` (Stock/Flow/Average), `priceType` (Current/Fixed), `adjustment` (sesongjustering), og `basePeriod`
+- Detaljer per statistikkvariabel (`measuringType`, `priceType`, `adjustment`, `basePeriod`) og status-koder: se `references/json-stat2.md`
 
 **Kodelister og filtrering:**
 
@@ -186,7 +193,7 @@ Variabler med `elimination: true` kan utelates fra `selection`-arrayet.
 GET /tables/{id}/data?valueCodes[Region]=F-03&codelist[Region]=agg_KommFylker&valueCodes[ContentsCode]=Personer1&valueCodes[Tid]=top(5)&outputFormat=json-stat2
 ```
 
-GET-varianten er ideell for å lage URL-er som kan deles direkte. NB: Variabler med `elimination: false` (typisk `Tid` og `ContentsCode`) må alltid inkluderes — ellers returnerer API-et HTTP 400 "Missing selection for mandatory variable". Se `references/codelists-and-filters.md` for `outputValues`-parameter ved bruk av grupperinger.
+GET-varianten er ideell for å lage URL-er som kan deles direkte. En GET helt uten seleksjonsparametre er ikke en feil: da returnerer API-et data for tabellens defaultselection (07459 gir f.eks. 360 celler — ikke hele tabellen). Men angir du filtre, må alle variabler med `elimination: false` (typisk `Tid` og `ContentsCode`) inkluderes — ellers returnerer API-et HTTP 400 "Missing selection for mandantory variable" (sic). Se `references/codelists-and-filters.md` for `outputValues`-parameter ved bruk av grupperinger.
 
 #### Outputformater
 
@@ -209,10 +216,10 @@ Viktigste mønstre: `top(N)` = siste N verdier, `from(verdi)` = fra og med, `ran
 - Inkluder **alltid** kildehenvisning med **samtlige tabell-ID-er** som er brukt (list opp alle hvis flere tabeller er kombinert — ikke utelat noen):
   - Norsk: **"Kilde: SSB, tabell {id}"** (eller "tabellene {id1}, {id2}, …")
   - Engelsk: **"Source: Statistics Norway, table {id}"** (eller "tables {id1}, {id2}, …")
-- Forklar hva tallene betyr i kontekst — på brukerens språk
+- Forklar hva tallene betyr i kontekst — på brukerens språk. Kommenter **kun** tallene som er hentet i uttrekket — ikke hent inn eller bland data fra andre kilder (Norges Bank, Eurostat, websøk) i svaret. Trenger brukeren slike tall, henvis til riktig skill eller kilde (f.eks. `norges-bank-api`) i stedet
 - Tallformat: norsk = mellomrom + komma (1 234,5); engelsk = komma + punktum (1,234.5)
 - Presenter enheter tydelig (antall/count, prosent/percent, indeks/index, NOK)
-- Tilby å visualisere dataene
+- Tilby å visualisere dataene — bruk `ssb-chart-skill` hvis den er tilgjengelig i miljøet
 - Tilby å laste ned i annet format (csv, xlsx)
 
 ### Steg 6: Lagrede spørringer (valgfritt)
@@ -264,10 +271,11 @@ Metadata-responsen inneholder URN-er under `link.describedby` som peker til Klas
 
 ## Fallgruver — gjør aldri
 
-- Hent data uten filtre fra store tabeller
+- Hent data uten filtre og anta at du får hele tabellen — API-et returnerer defaultselection-uttrekket, og du kontrollerer ikke hva det inneholder; angi alltid eksplisitt seleksjon
 - Anta at kommunekoder er stabile over tid (kommunesammenslåinger i 2020!)
 - Bland koder fra forskjellige kodelister
 - Presenter data uten enhet
+- Suppler SSB-tall med data hentet fra andre kilder i samme svar — kommenter kun det hentede uttrekket, og henvis heller videre (f.eks. til `norges-bank-api` for sentralbankdata)
 - Ignorer `status`-feltet — det kan indikere manglende eller konfidensielle verdier
 
 ---
@@ -339,7 +347,7 @@ https://data.ssb.no/api/pxwebapi/v2/tables/07459/data?valueCodes[Region]=K-0301&
 POST /tables/07221/data?outputFormat=xlsx&outputFormatParams=UseCodesAndTexts&outputFormatParams=IncludeTitle
 { "selection": [
     { "variableCode": "Boligtype", "valueCodes": ["00"] },
-    { "variableCode": "ContentsCode", "valueCodes": ["KvPris"] },
+    { "variableCode": "ContentsCode", "valueCodes": ["Boligindeks"] },
     { "variableCode": "Tid", "valueCodes": ["top(20)"] }
 ]}
 → Excel-fil med boligprisindeks siste 20 kvartaler
@@ -374,5 +382,7 @@ Hvis API-et ikke er tilgjengelig:
 1. Henvis til SSBs Statistikkbank: https://www.ssb.no/statbank
 2. Foreslå relevante søkeord basert på spørsmålet
 3. Gi veiledning for manuelt oppslag (tabellnummer, variabler å se etter)
+
+Trenger brukeren tall fra før Statistikkbanken-perioden (eldre folketellinger, NOS-publikasjoner, tidsserier fra 1800-tallet): bruk `ssb-histstat`-skillen hvis den er tilgjengelig i miljøet.
 
 **Tips:** I Statistikkbanken kan du bygge opp et uttrekk grafisk, deretter trykke "Lagre" for å få ferdig API-spørring som både GET-URL og POST-body. Nyttig for å verifisere koder og filtre.
