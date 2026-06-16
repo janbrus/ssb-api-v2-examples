@@ -3,6 +3,12 @@
 Gjeldende versjon står i `SKILL.md`-frontmatter under `metadata.version`.
 Har din kopi ingen `metadata.version`, er den fra før 2026-06-12 — last ned ny.
 
+## 1.2.0 — 2026-06-15
+
+- Ny gjennomgående regel for tidsdimensjonen: foretrekk relative tidsfiltre `top(N)`/`from(verdi)` framfor `range(fra,til)` og eksplisitte enkeltverdier — relative filtre fanger automatisk opp nye perioder, så delbare URL-er og lagrede spørringer holder seg oppdaterte (SKILL.md Steg 3/Steg 4 + `references/codelists-and-filters.md`)
+- Dokumentert **pyjstat** (https://pypi.org/project/pyjstat/) i `references/json-stat2.md` — Python-bibliotek for å lese/skrive json-stat og konvertere til/fra pandas DataFrame
+- Lagt til **PxWebApiData** (https://cran.r-project.org/package=PxWebApiData) i README — R-pakke som henter PxWeb/PxWebApi-data (SSB, SCB m.fl.) inn i R
+
 ## 1.1.0 — 2026-06-12
 
 - Versjonering innført (`metadata.version` i SKILL.md-frontmatter + denne loggen)

@@ -38,3 +38,11 @@ Både metadata (`/tables/{id}/metadata`) og data (`/tables/{id}/data`) returnere
 - **`extension`** — Leverandørspesifikk metadata. I json-stat2 kan `extension` forekomme på **to nivåer**:
   - **Dataset/rot-nivå** (`<root>.extension`) — metadata om hele tabellen. Hos SSB: `firstPeriod`, `lastPeriod`, `discontinued`, `nextUpdate`, `contact`, og PX-metadata under `extension.px` med `subject-code`, `subject-area`, `decimals`, `heading`/`stub` (default-pivotering) og `contents` — en kort tabelltittel (f.eks. "07459: Befolkning,").
   - **Variabel-nivå** (`dimension.{var}.extension`) — metadata om den enkelte dimensjonen. Hos SSB: `elimination` (kan variabelen utelates?), `eliminationValueCode`, `show`, `codelists` (tilgjengelige `agg_`/`vs_`-kodelister). For statistikkvariabelen (`ContentsCode`) i tillegg: `measuringType` (Stock/Flow/Average), `priceType` (Current/Fixed/NotApplicable), `adjustment` (sesongjustering), `basePeriod` (basisperiode for indekser), `refperiod` (referansetidspunkt) og `alternativeText` — alle indeksert per ContentsCode-verdi.
+
+---
+
+## Verktøy / biblioteker
+
+**pyjstat** (https://pypi.org/project/pyjstat/) — Python-bibliotek for å lese og skrive json-stat. Konverterer mellom json-stat(2) og pandas DataFrame, nyttig for å ta et SSB-uttrekk videre til analyse i Python.
+
+For R finnes PxWebApiData, en API-klient som henter PxWeb-data direkte inn i R — se README.

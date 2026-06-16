@@ -12,7 +12,7 @@ description: >
   websøk når svaret finnes i norsk offentlig statistikk. Dekker kodelister,
   lagrede spørringer og outputformater (json-stat2, csv, xlsx).
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # SSB PxWebApi v2 — Komplett guide
@@ -137,7 +137,7 @@ Metadata returneres i json-stat2-format (Dataset-schema) — full formatreferans
 - **`id`-array** — Variabelnavnene (f.eks. `["Region", "Kjonn", "Alder", "ContentsCode", "Tid"]`); `size`-arrayet gir antall verdier per variabel
 - **`dimension`-objekt** — Per variabel: koder (`category.index`), lesbare navn (`category.label`), enhet og desimaler (`category.unit`, på ContentsCode), samt `extension` med `elimination`, `eliminationValueCode` og `codelists` (tilgjengelige kodelister)
 - **`extension`-objekt (rot)** — `firstPeriod`, `lastPeriod`, `discontinued`, `contact`, og PX-metadata under `extension.px`: `subject-code`, `subject-area`, `decimals`, `heading`/`stub` (default-pivotering), og `contents` (kort tabelltittel — brukes til tittelbygging i Steg 5)
-- **`role`-objekt** — **Start analysen her:** `role.metric` viser hva som måles (antall, prosent, NOK, indeks) — hos SSB heter variabelen "statistikkvariabel" på norsk og `ContentsCode` på engelsk; sjekk `category.unit` for enhet og desimaler. `role.time` er tidsdimensjonen, `role.geo` er geografi — **hvis `role.geo` mangler, anta at dataene gjelder hele Norge**, ikke spør brukeren. Øvrige variabler i `id` er nedbrytningsdimensjoner (kjønn, alder, næring osv.).
+- **`role`-objekt** — **Start analysen her:** `role.metric` viser hva som måles (antall, prosent, NOK, indeks) — hos SSB heter variabelen "statistikkvariabel" på norsk og `ContentsCode` på engelsk; sjekk `category.unit` for enhet og desimaler. `role.time` er tidsdimensjonen, `role.geo` er geografi — **hvis `role.geo` mangler, anta at dataene gjelder hele Norge**, ikke spør brukeren. Øvrige variabler i `id` er nedbrytningsdimensjoner (kjønn, alder, næring osv.). Når du senere filtrerer `role.time` (Steg 4), foretrekk `top()`/`from()` framfor `range()`/enkeltverdier.
 - **`link.describedby`** — Kobling til SSBs Klass (klassifikasjoner) og VarDok (variabeldefinisjoner) via URN-er — se `references/klass-vardok.md`
 
 **Viktige regler om metadata:**
@@ -201,7 +201,7 @@ Standard er `json-stat2`. For `csv`, `xlsx`, `html`, `px`, `json-px` og parametr
 
 #### Filteruttrykk i valueCodes
 
-Viktigste mønstre: `top(N)` = siste N verdier, `from(verdi)` = fra og med, `range(fra,til)` = intervall, `*` = alle verdier. Wildcards `*` og `?` kan brukes for mønstermatching (f.eks. `46*` = alle kommuner i Vestland). Se `references/codelists-and-filters.md` for komplett syntaks.
+Viktigste mønstre: `top(N)` = siste N verdier, `from(verdi)` = fra og med, `range(fra,til)` = intervall, `*` = alle verdier. Wildcards `*` og `?` kan brukes for mønstermatching (f.eks. `46*` = alle kommuner i Vestland). **For tid: foretrekk `top()` eller `from()` framfor `range()` og enkeltverdier** — relative filtre fanger nye perioder automatisk, så delbare URL-er og lagrede spørringer holder seg oppdaterte. Se `references/codelists-and-filters.md` for komplett syntaks.
 
 **Viktige begrensninger:**
 

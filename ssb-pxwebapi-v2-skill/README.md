@@ -62,6 +62,7 @@ Skillen er ren kunnskap — den gir AI-assistenten *veiledning* for hvordan PxWe
 - **@jarib/pxweb-mcp** (https://www.npmjs.com/package/@jarib/pxweb-mcp) — open source MCP-server for PxWebApi-er, fungerer med SSB, SCB og andre statistikkbyråer som bruker PxWeb V2. Skillen inneholder `references/mcp-tools.md` med mapping mellom verktøyene og API-endepunktene.
 - **TRYs MCP-server** (https://tools.try.no/ssb-mcp) — hostet MCP-tjeneste; krever e-postregistrering og er av TRY merket som eksperimentell
 - **Egen MCP-server** — bygg din egen med FastMCP eller lignende
+- **PxWebApiData (R)** (https://cran.r-project.org/package=PxWebApiData) — R-pakke som henter data fra PxWeb/PxWebApi (SSB, SCB m.fl.) direkte inn i R som data frames
 - **Direkte API-kall** — skillen beskriver endepunktene slik at Claude eller andre kan konstruere korrekte URL-er
 
 ## Lisens
