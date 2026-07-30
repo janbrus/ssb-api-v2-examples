@@ -12,7 +12,7 @@ description: >
   websøk når svaret finnes i norsk offentlig statistikk. Dekker kodelister,
   lagrede spørringer og outputformater (json-stat2, csv, xlsx).
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # SSB PxWebApi v2 — Komplett guide
@@ -122,7 +122,7 @@ Bruk `GET /tables` med `query`-parameter.
 
 Presenter de 3–5 mest relevante treffene med tabell-ID, tittel, siste periode, tidsfrekvens og `discontinued`-status. Anbefal den mest passende.
 
-Respons-strukturen for hvert treff inkluderer: `id`, `label`, `description`, `updated`, `firstPeriod`, `lastPeriod`, `timeUnit` (Annual/Quarterly/Monthly/Weekly), `variableNames`, `discontinued`, `subjectCode`, og `paths` (emneplassering i SSBs hierarki — **3. nivå i pathen er statistikkens kortnavn**, f.eks. brukt i URL-er som `ssb.no/<kortnavn>`). Kortnavnet gir også tilgang til "Om statistikken"-siden med definisjoner og forklaringer: `https://www.ssb.no/<kortnavn>#om-statistikken` (norsk) eller `https://www.ssb.no/en/<kortnavn>#om-statistikken` (engelsk) — f.eks. `https://www.ssb.no/arblonn#om-statistikken`.
+Respons-strukturen for hvert treff inkluderer: `id`, `label`, `description`, `updated`, `firstPeriod`, `lastPeriod`, `timeUnit` (Annual/Quarterly/Monthly/Weekly), `variableNames`, `discontinued`, `subjectCode`, og `paths` (emneplassering i SSBs hierarki — **3. nivå i pathen er statistikkens kortnavn**, f.eks. brukt i URL-er som `ssb.no/<kortnavn>`). Kortnavnet gir også tilgang til "Om statistikken"-siden med definisjoner og forklaringer: `https://www.ssb.no/<kortnavn>#om-statistikken` (norsk) eller `https://www.ssb.no/en/<kortnavn>#om-statistikken` (engelsk) — f.eks. `https://www.ssb.no/arblonn#om-statistikken`. (Når du senere henter metadata i Steg 3, ligger disse lenkene ferdig i rot-`link.related` — se `references/klass-vardok.md`.)
 
 Se `references/common-tables.md` for en kurert liste over mye brukte tabeller.
 
@@ -138,7 +138,7 @@ Metadata returneres i json-stat2-format (Dataset-schema) — full formatreferans
 - **`dimension`-objekt** — Per variabel: koder (`category.index`), lesbare navn (`category.label`), enhet og desimaler (`category.unit`, på ContentsCode), samt `extension` med `elimination`, `eliminationValueCode` og `codelists` (tilgjengelige kodelister)
 - **`extension`-objekt (rot)** — `firstPeriod`, `lastPeriod`, `discontinued`, `contact`, og PX-metadata under `extension.px`: `subject-code`, `subject-area`, `decimals`, `heading`/`stub` (default-pivotering), og `contents` (kort tabelltittel — brukes til tittelbygging i Steg 5)
 - **`role`-objekt** — **Start analysen her:** `role.metric` viser hva som måles (antall, prosent, NOK, indeks) — hos SSB heter variabelen "statistikkvariabel" på norsk og `ContentsCode` på engelsk; sjekk `category.unit` for enhet og desimaler. `role.time` er tidsdimensjonen, `role.geo` er geografi — **hvis `role.geo` mangler, anta at dataene gjelder hele Norge**, ikke spør brukeren. Øvrige variabler i `id` er nedbrytningsdimensjoner (kjønn, alder, næring osv.). Når du senere filtrerer `role.time` (Steg 4), foretrekk `top()`/`from()` framfor `range()`/enkeltverdier.
-- **`link.describedby`** — Kobling til SSBs Klass (klassifikasjoner) og VarDok (variabeldefinisjoner) via URN-er — se `references/klass-vardok.md`
+- **`link`-objekter (rot og per variabel)** — `link.describedby` kobler til SSBs Klass (klassifikasjoner) og VarDok (variabeldefinisjoner) via URN-er; `link.related` gir ferdige menneskelesbare lenker: på rot-nivå til statistikksiden og «Om statistikken», per variabel til definisjonssidene med label (f.eks. «Standard for kjønn») — se `references/klass-vardok.md`
 
 **Viktige regler om metadata:**
 
@@ -265,7 +265,7 @@ Både metadata (`/tables/{id}/metadata`) og data (`/tables/{id}/data`) returnere
 
 ## Kobling til SSBs metadata-systemer
 
-Metadata-responsen inneholder URN-er under `link.describedby` som peker til Klass (klassifikasjoner, korrespondansetabeller, kommunehistorikk) og VarDok (variabeldefinisjoner). Trenger du å slå opp definisjoner eller fullstendige kodeverk — se `references/klass-vardok.md`.
+Metadata-responsen inneholder `link`-objekter på rot- og variabel-nivå: `link.describedby` med URN-er som peker til Klass (klassifikasjoner, korrespondansetabeller, kommunehistorikk) og VarDok (variabeldefinisjoner), og `link.related` med ferdige menneskelesbare lenker til statistikksiden, «Om statistikken» og definisjonssidene. Trenger du å slå opp definisjoner eller fullstendige kodeverk — se `references/klass-vardok.md`.
 
 ---
 

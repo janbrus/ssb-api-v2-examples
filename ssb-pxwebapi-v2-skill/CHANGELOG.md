@@ -3,6 +3,12 @@
 Gjeldende versjon står i `SKILL.md`-frontmatter under `metadata.version`.
 Har din kopi ingen `metadata.version`, er den fra før 2026-06-12 — last ned ny.
 
+## 1.3.0 — 2026-07-29
+
+- Dokumentert SSBs nye `link.related` i metadata-responsen (verifisert mot live API 2026-07-29): rot-nivå gir ferdige lenker til statistikksiden (`relation: "statistics-homepage"`) og «Om statistikken» (`relation: "about-statistics"`) med kortnavnet direkte i `extension.metaid` (`KORTNAVN:<kortnavn>`); variabel-nivå gir menneskelesbare Klass-/VarDok-lenker med label (`relation: "definitions"`, `metaid` = URN-en fra `describedby`). Lenker og labels følger `lang`-parameteren. Kun i metadata-responser — data-responser har fortsatt bare `describedby`. (`references/klass-vardok.md` omstrukturert, ny `link`-oppføring i `references/json-stat2.md`, Steg 2/Steg 3 og «Kobling til SSBs metadata-systemer» i SKILL.md oppdatert)
+- Dokumentert `describedby`-nøkkelstrukturen: `extension`-nøkkelen er variabelnavn (URN-er for hele variabelen) eller enkeltverdi-kode (URN per verdi — vanlig for `ContentsCode`)
+- Sjekket søsterskillen: SCBs API (`statistikdatabasen.scb.se/api/v2`) eksponerer ikke `link.related` per 2026-07-29 — ingen endring i `scb-pxwebapi-v2`
+
 ## 1.2.0 — 2026-06-15
 
 - Ny gjennomgående regel for tidsdimensjonen: foretrekk relative tidsfiltre `top(N)`/`from(verdi)` framfor `range(fra,til)` og eksplisitte enkeltverdier — relative filtre fanger automatisk opp nye perioder, så delbare URL-er og lagrede spørringer holder seg oppdaterte (SKILL.md Steg 3/Steg 4 + `references/codelists-and-filters.md`)

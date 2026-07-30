@@ -9,7 +9,7 @@ En [Claude Skill](https://support.claude.com/en/articles/12512180-use-skills-in-
 - Håndterer kodelister og aggregeringer (fylker, kommunesammenslåinger, aldersgrupper)
 - Støtter norsk og engelsk
 - Inkluderer kurert liste over ~60 mye brukte tabeller
-- Refererer til SSBs Klass- og VarDok-systemer via URN-er i metadata
+- Refererer til SSBs Klass- og VarDok-systemer via URN-er og ferdige `link.related`-lenker i metadata
 
 ## Filstruktur
 
@@ -24,7 +24,7 @@ ssb-pxwebapi-v2/
     ├── api-details.md                    # SSB-spesifikk driftsinformasjon (publiseringstider, grenser, lisens)
     ├── codelists-and-filters.md          # Kodelister (inkl. KPI/COICOP-grupperinger), filtersyntaks, outputValues
     ├── search-syntax.md                  # Lucene-basert søkesyntaks for /tables?query=
-    ├── klass-vardok.md                   # Kobling til SSBs Klass (klassifikasjoner) og VarDok (variabeldefinisjoner) via URN-er
+    ├── klass-vardok.md                   # Kobling til SSBs Klass (klassifikasjoner) og VarDok (variabeldefinisjoner) via URN-er og link.related-lenker
     ├── output-formats.md                 # json-stat2, csv, xlsx, html, px, parquet, parametre for pivotering og etiketter
     ├── common-tables.md                  # Kurert liste over vanlige tabeller
     ├── troubleshooting.md                # Feilsøking og standardtegn
