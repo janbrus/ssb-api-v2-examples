@@ -3,6 +3,11 @@
 Gjeldende versjon står i `SKILL.md`-frontmatter under `metadata.version`.
 Har din kopi ingen `metadata.version`, er den fra før 2026-06-12 — last ned ny.
 
+## 1.3.1 — 2026-08-05
+
+- Rate limit annonseres nå i HTTP-responsheadere i stedet for i `/config` (headere observert 2026-08-05: `x-ratelimit-limit: 40`, `x-ratelimit-policy: 40;w=60s`, `x-ratelimit-remaining`, `x-ratelimit-resource: SB_API_1MIN`). `maxCallsPerTimeWindow`/`timeWindow` står igjen i `/config`-responsen, men er nullstilt til `0` og ikke lenger i bruk (`0` betyr ikke «ingen grense»). Gjeldende grense er 40 kall per 60 sekunder (tidligere dokumentert som 30/minutt). Ny headertabell i `references/api-details.md`; 429-avsnittet og `/config`-eksempelet i `references/troubleshooting.md` samt endepunktvalg og «Viktige begrensninger» i SKILL.md oppdatert.
+- Sjekket søsterskillen: endringen gjelder ikke SCB (per 2026-08-05) — SCBs API viser fortsatt rate limit i `/config`, så `scb-pxwebapi-v2` beholder `/config`-formuleringen uendret.
+
 ## 1.3.0 — 2026-07-29
 
 - Dokumentert SSBs nye `link.related` i metadata-responsen (verifisert mot live API 2026-07-29): rot-nivå gir ferdige lenker til statistikksiden (`relation: "statistics-homepage"`) og «Om statistikken» (`relation: "about-statistics"`) med kortnavnet direkte i `extension.metaid` (`KORTNAVN:<kortnavn>`); variabel-nivå gir menneskelesbare Klass-/VarDok-lenker med label (`relation: "definitions"`, `metaid` = URN-en fra `describedby`). Lenker og labels følger `lang`-parameteren. Kun i metadata-responser — data-responser har fortsatt bare `describedby`. (`references/klass-vardok.md` omstrukturert, ny `link`-oppføring i `references/json-stat2.md`, Steg 2/Steg 3 og «Kobling til SSBs metadata-systemer» i SKILL.md oppdatert)

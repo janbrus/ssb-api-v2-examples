@@ -12,7 +12,7 @@ description: >
   websøk når svaret finnes i norsk offentlig statistikk. Dekker kodelister,
   lagrede spørringer og outputformater (json-stat2, csv, xlsx).
 metadata:
-  version: "1.3.0"
+  version: "1.3.1"
 ---
 
 # SSB PxWebApi v2 — Komplett guide
@@ -52,7 +52,7 @@ Alle endepunkter aksepterer `lang`-parameter (`no`, `en`). Standard er `no`.
 - Slå opp en kodeliste isolert → `GET /codelists/{id}`
 - Bruker har bygd uttrekk i Statistikkbanken → kopier "Lagre"-URL/POST-body direkte
 - Skal gjenbruke/dele spørring → `POST /savedqueries`, deretter `GET /savedqueries/{id}/data`
-- Sjekke grenser (maxDataCells, rate limit) → `GET /config`
+- Sjekke cellegrensen (maxDataCells) → `GET /config`; rate limit står i `x-ratelimit-*`-responsheaderne, ikke i `/config`
 
 ---
 
@@ -206,7 +206,7 @@ Viktigste mønstre: `top(N)` = siste N verdier, `from(verdi)` = fra og med, `ran
 **Viktige begrensninger:**
 
 - API-et har en øvre grense for antall celler per spørring. Sjekk `/config` for `maxDataCells` (typisk 800 000 men kan endre seg).
-- Rate limiting: `/config` viser `maxCallsPerTimeWindow` og `timeWindow`.
+- Rate limiting: annonseres i HTTP-responsheaderne, ikke lenger i `/config`. `x-ratelimit-policy: 40;w=60s` betyr 40 kall per 60 sekunder; `x-ratelimit-remaining` viser gjenstående kall i inneværende vindu. Se `references/api-details.md`.
 - Start smalt — det er lettere å utvide enn å håndtere for mye data.
 
 ### Steg 5: Presenter resultatene

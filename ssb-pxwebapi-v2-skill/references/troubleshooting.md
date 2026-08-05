@@ -49,7 +49,7 @@ Ressursen finnes ikke.
 
 Rate-limiting. Du har sendt for mange forespørsler.
 
-**Løsning:** Vent og prøv igjen. Sjekk `/config` for `maxCallsPerTimeWindow` og `timeWindow` (i sekunder).
+**Løsning:** Vent til tidsvinduet nullstilles og prøv igjen. Grensen står i `x-ratelimit-*`-responsheaderne (ikke lenger i `/config`): `x-ratelimit-policy: 40;w=60s` betyr 40 kall per 60 sekunder, og `x-ratelimit-remaining` viser gjenstående kall i inneværende vindu. Se `api-details.md` for full headeroversikt.
 
 ---
 
@@ -128,8 +128,8 @@ Bruk `GET /config` for å se gjeldende grenser:
 ```json
 {
   "maxDataCells": 800000,
-  "maxCallsPerTimeWindow": 30,
-  "timeWindow": 10,
+  "maxCallsPerTimeWindow": 0,
+  "timeWindow": 0,
   "defaultLanguage": "no",
   "languages": [{"id": "no", "label": "norsk (bokmål)"}, {"id": "en", "label": "English"}],
   "defaultDataFormat": "json-stat2",
@@ -137,4 +137,4 @@ Bruk `GET /config` for å se gjeldende grenser:
 }
 ```
 
-Verdiene kan endre seg — hardkod dem ikke.
+Verdiene kan endre seg — hardkod dem ikke. NB: `maxCallsPerTimeWindow` og `timeWindow` står igjen i responsen, men er nullstilt til `0` og ikke lenger i bruk — `0` betyr **ikke** «ingen grense». Gjeldende rate limit annonseres i `x-ratelimit-*`-responsheaderne, se 429-avsnittet over og `api-details.md`.
