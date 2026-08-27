@@ -2,9 +2,25 @@
 
 SSB-tilpassede regler for hvert leveranseformat.
 
+**Avklar rendringsmål før du bruker denne filen.** Seksjonene under er organisert etter *teknologi*, ikke etter rendringsmål, og kodeeksemplene er som utgangspunkt skrevet for **frittstående leveranse** (se SKILL.md → «Rendringsmål»): de hardkoder SSB-chrome som `#274247`-akser, `#C3DCDC`-rutenett, Roboto Condensed-titler og kildelinje inne i selve diagrammet. Kopieres de rått inn i en **inline chat-widget**, overstyrer de vertens designsystem og bryter mørk modus.
+
+| Seksjon                  | Gjelder                                                        |
+| ------------------------ | -------------------------------------------------------------- |
+| Tallformat               | Begge rendringsmål                                              |
+| React / HTML             | Begge — widget krever avvikene som er listet i seksjonen        |
+| Vanilla JS + Chart.js v4 | Begge — widget krever avvikene som er listet i seksjonen        |
+| PowerPoint               | Kun frittstående leveranse                                      |
+| Excel                    | Kun frittstående leveranse                                      |
+| Python / Matplotlib      | Kun frittstående leveranse                                      |
+| Markdown-tabeller        | Begge — og eneste tillatte tabellform i widget                  |
+
+Uavhengig av rendringsmål: seriefarger fra SSB-paletten, `beginAtZero` på søyler, status-koder som hull og desimaler fra data er alltid påkrevd.
+
 ---
 
 ## Tallformat — språk-bundet
+
+**Gjelder begge rendringsmål.**
 
 Tallformat følger språkvalget (samme regel som i `ssb-pxwebapi-v2`):
 
@@ -16,6 +32,13 @@ API-et returnerer alltid desimal-punktum uavhengig av språk — formater om ved
 ---
 
 ## React / HTML (Recharts, D3.js, Chart.js)
+
+**Gjelder begge rendringsmål, men reglene under er skrevet for frittstående leveranse.** I en inline chat-widget gjelder disse avvikene (se SKILL.md → «Rendringsmål»):
+
+- **Tooltip, hover og layout** — følg vertens tokens og konvensjoner. `#274247`-tooltipbakgrunnen under er en lys-modus-farge og bryter mørk modus.
+- **Fonter** — ikke importer Roboto Condensed/Open Sans fra Google Fonts. Verten har egen typografi, og eksterne font-kall kan være blokkert i widget-sandkassen.
+- **Kilde-footer** — `<p>`-elementet under skal ikke rendres inne i widgeten; kildelinjen hører hjemme i chat-svarteksten. Selve strengbyggingen (språkvalget) er fortsatt riktig og gjenbrukes der.
+- **Seriefarger** — uendret: SSB-paletten hardkodet som hex.
 
 **Layout:**
 - Dashboard: Scorecard-kort øverst, detaljdiagrammer i 2–3 kolonne grid under
@@ -54,6 +77,13 @@ const sourceLine = lang === 'en'
 
 For apper uten React/Vue/build-step. Forutsetter at `formatNumber(value, decimals)` og en JSON-Stat2-til-datasets-funksjon er tilgjengelig (se `jsonstat-to-chart.md` for sistnevnte).
 
+**Gjelder begge rendringsmål, men konfigurasjonen under er skrevet for frittstående leveranse.** Chart.js tegner på canvas og kan ikke lese CSS-variabler selv. I en inline chat-widget må du derfor hente vertens tokens eksplisitt i JS — f.eks. `getComputedStyle(document.documentElement).getPropertyValue('--text-muted')` — og sette dem inn der eksempelet hardkoder `#274247` / `#C3DCDC`. Dette er grunnen til at hardkodet hex er riktig for *seriefarger* også i widget, men feil for chrome. Avvik i widget:
+
+- `plugins.title` og `plugins.subtitle` (kildelinjen): sett `display: false`. Tittel og kilde skrives i chat-svarteksten, ikke inn i canvas.
+- `scales.*.ticks.color` og `scales.y.grid.color`: vertens tokens, ikke SSB-hex.
+- `datasets[].borderColor` / `backgroundColor`: uendret SSB-palett-hex.
+- `beginAtZero`, `spanGaps: false` og desimalhåndtering: uendret. Statistisk integritet er ikke rendringsmål-avhengig.
+
 ```js
 // Tittel + kildelinje bygget fra JSON-Stat2-responsen
 const chartTitle = cleanContents(data.extension?.px?.contents);  // strip "<id>:" + trailing ","
@@ -76,11 +106,12 @@ new Chart(canvas, {
         display: true, text: chartTitle, position: 'top',
         color: '#274247', font: { size: 16, weight: 'bold' },
       },
-      subtitle: {  // mandatorisk kildelinje — lever i canvas så den følger med ved PNG-eksport
+      subtitle: {  // mandatorisk kildelinje (frittstående) — lever i canvas så den følger med ved
+                   // PNG-eksport. I widget: display: false, kildelinjen i chat-teksten i stedet.
         display: true, text: sourceLine, position: 'bottom',
         color: '#909090', font: { size: 11 },
       },
-      legend: { position: 'bottom', labels: { color: '#274247' } },
+      legend: { position: 'top', labels: { color: '#274247' } },
       tooltip: {
         callbacks: {
           // ctx.dataset.decimals settes per serie i datasets-byggeren — IKKE hardkod
@@ -111,6 +142,8 @@ new Chart(canvas, {
 
 ## PowerPoint (.pptx)
 
+**Gjelder kun frittstående leveranse.**
+
 **Slide-layout:**
 - Tittel: 20pt Roboto Condensed Bold, `#274247`, øverst til venstre
 - Diagram fyller ~70% av slide-høyde
@@ -130,6 +163,8 @@ new Chart(canvas, {
 ---
 
 ## Excel (.xlsx)
+
+**Gjelder kun frittstående leveranse.**
 
 **Generelt:**
 - Fjern default Excel rutenett og rammer
@@ -167,6 +202,8 @@ new Chart(canvas, {
 
 ## Python / Matplotlib
 
+**Gjelder kun frittstående leveranse.** Matplotlib produserer bildefiler (PNG/PDF) med innbrent lys-modus-bakgrunn, og egner seg derfor ikke til inline widget-rendring.
+
 **Tema:**
 ```python
 apply_ssb_theme()  # Se color-system.md for implementasjon
@@ -195,6 +232,8 @@ fig.text(0.01, 0.01, source_line, fontsize=9, color='#909090', style='italic')
 ---
 
 ## Markdown-tabeller
+
+**Gjelder begge rendringsmål — og er den eneste tillatte tabellformen i inline chat-widget.** Den stilsatte SSB-tabellen (SKILL.md → «Tabellformatering») gjelder kun frittstående leveranse; i widget-kontekst skrives tabellen som vanlig markdown i chat-svaret, ikke som HTML inne i widgeten.
 
 **Formatering:**
 - Høyrejuster tall-kolonner med `---:` i header-separator

@@ -12,7 +12,8 @@ description: >
   websøk når svaret finnes i norsk offentlig statistikk. Dekker kodelister,
   lagrede spørringer og outputformater (json-stat2, csv, xlsx).
 metadata:
-  version: "1.3.1"
+  version: "1.4.0"
+  source: https://github.com/janbrus/ssb-api-v2-examples/tree/main/ssb-pxwebapi-v2-skill
 ---
 
 # SSB PxWebApi v2 — Komplett guide
@@ -22,6 +23,30 @@ Denne skillen guider deg gjennom riktig bruk av SSBs PxWebApi v2 for å søke, u
 ```
 https://data.ssb.no/api/pxwebapi/v2
 ```
+
+**Skillen vedlikeholdes her:** https://github.com/janbrus/ssb-api-v2-examples/tree/main/ssb-pxwebapi-v2-skill
+Sjekk repoet for nyere versjon, referansefiler og endringslogg. Denne kopien er v1.4.0.
+
+## Dataintegritet — grunnregelen
+
+SSB er Norges offisielle statistikkprodusent. Tilliten til tallene er selve produktet. Denne regelen går foran alt annet i skillen:
+
+**Oppgi aldri et tall du ikke har hentet fra API-et i denne samtalen.**
+
+- **Ingen tall fra hukommelsen.** Har du ikke kjørt spørringen, har du ikke tallet. Dette gjelder også tall du er sikker på — folketall, KPI-nivåer, ledighetsrater endrer seg, og treningsdata har en skjæringsdato.
+- **Ingen tall fra andre kilder i samme svar.** Ikke Norges Bank, Eurostat, OECD, websøk eller nyhetsartikler. Henvis videre i stedet.
+- **Feiler API-et, si det.** Ikke anslå, ikke rund av fra minnet, ikke «omtrent». Se «Fallback».
+- **Ingen interpolering eller framskriving.** Mangler en periode i uttrekket, mangler den i svaret.
+- **Merk egne beregninger.** Vekst i prosent, andeler, summer og indeksomregninger er dine, ikke SSBs. Vis hvilke hentede tall de bygger på.
+- **Behold API-ets presisjon.** Bruk desimalene fra `category.unit.decimals`. Ikke legg til presisjon som ikke finnes, og ikke rund bort presisjon som betyr noe.
+- **Verifiser variabelkoder mot metadata.** Tabell-ID-er er permanente og endres aldri, men variabelkoder (`ContentsCode`, verdikoder) skal bekreftes med metadata før bruk — ikke gjettes fra hukommelsen.
+- **Sjekk `discontinued` og `lastPeriod`.** Tabeller avsluttes, og serien fortsetter ofte i en ny tabell. Bruker du en avsluttet tabell, si det og oppgi siste periode. Finn etterfølgeren når den finnes.
+- **Vis `status`.** Manglende, foreløpige og konfidensielle verdier skal fram i tabellen, ikke skjules. Se `references/troubleshooting.md`.
+- **Flagg foreløpige tall.** Nasjonalregnskap og flere andre serier revideres. Si fra når tallene kan endre seg.
+
+Finner du ikke tallet i Statistikkbanken, er riktig svar at det ikke ble funnet — med forslag til søkeord eller alternativ kilde. Et ærlig «vet ikke» er langt bedre enn et plausibelt tall som ikke stemmer. Feil tall med SSB-kildehenvisning skader tilliten til SSB, ikke bare til svaret.
+
+---
 
 ## API-oversikt
 
@@ -52,7 +77,7 @@ Alle endepunkter aksepterer `lang`-parameter (`no`, `en`). Standard er `no`.
 - Slå opp en kodeliste isolert → `GET /codelists/{id}`
 - Bruker har bygd uttrekk i Statistikkbanken → kopier "Lagre"-URL/POST-body direkte
 - Skal gjenbruke/dele spørring → `POST /savedqueries`, deretter `GET /savedqueries/{id}/data`
-- Sjekke cellegrensen (maxDataCells) → `GET /config`; rate limit står i `x-ratelimit-*`-responsheaderne, ikke i `/config`
+- Sjekke grenser (maxDataCells, rate limit) → `GET /config`
 
 ---
 
@@ -197,7 +222,11 @@ GET-varianten er ideell for å lage URL-er som kan deles direkte. En GET helt ut
 
 #### Outputformater
 
-Standard er `json-stat2`. For `csv`, `xlsx`, `html`, `px`, `json-px` og parametre som `UseCodesAndTexts`, `IncludeTitle`, CSV-separatorer, samt `heading`/`stub`-pivotering — se `references/output-formats.md`.
+Standard er `json-stat2`. Øvrige formater: `csv`, `xlsx`, `html`, `px`, `json-px` og `parquet`. Sjekk `dataFormats` i `GET /config` for gjeldende liste.
+
+`parquet` er kolonneformat for dataanalyse — les direkte med pandas eller DuckDB. Formatet returneres som `application/octet-stream` og gir lang-format med én rad per observasjon, pluss en `timestamp`-kolonne. Ved én statistikkvariabel heter kolonnene `value` og `value_symbol`; ved flere blir de `ContentsCode_{kode}` og `ContentsCode_{kode}_symbol`. **`_symbol`-kolonnene bærer `status`-kodene** — les dem, ikke bare `value`. Parquet bruker alltid koder, ikke tekst; `outputFormatParams=UseCodesAndTexts` gir HTTP 400.
+
+For `outputFormatParams` som `UseCodesAndTexts` og `IncludeTitle`, CSV-separatorer og `heading`/`stub`-pivotering — se `references/output-formats.md`.
 
 #### Filteruttrykk i valueCodes
 
@@ -206,7 +235,7 @@ Viktigste mønstre: `top(N)` = siste N verdier, `from(verdi)` = fra og med, `ran
 **Viktige begrensninger:**
 
 - API-et har en øvre grense for antall celler per spørring. Sjekk `/config` for `maxDataCells` (typisk 800 000 men kan endre seg).
-- Rate limiting: annonseres i HTTP-responsheaderne, ikke lenger i `/config`. `x-ratelimit-policy: 40;w=60s` betyr 40 kall per 60 sekunder; `x-ratelimit-remaining` viser gjenstående kall i inneværende vindu. Se `references/api-details.md`.
+- Rate limiting: `/config` viser `maxCallsPerTimeWindow` og `timeWindow`.
 - Start smalt — det er lettere å utvide enn å håndtere for mye data.
 
 ### Steg 5: Presenter resultatene
@@ -218,7 +247,10 @@ Viktigste mønstre: `top(N)` = siste N verdier, `from(verdi)` = fra og med, `ran
   - Engelsk: **"Source: Statistics Norway, table {id}"** (eller "tables {id1}, {id2}, …")
 - Forklar hva tallene betyr i kontekst — på brukerens språk. Kommenter **kun** tallene som er hentet i uttrekket — ikke hent inn eller bland data fra andre kilder (Norges Bank, Eurostat, websøk) i svaret. Trenger brukeren slike tall, henvis til riktig skill eller kilde (f.eks. `norges-bank-api`) i stedet
 - Tallformat: norsk = mellomrom + komma (1 234,5); engelsk = komma + punktum (1,234.5)
-- Presenter enheter tydelig (antall/count, prosent/percent, indeks/index, NOK)
+- Presenter enheter tydelig (antall/count, prosent/percent, indeks/index, NOK). For indekser: oppgi referanseperioden (f.eks. 2015=100)
+- **Skill hentede tall fra egne beregninger.** Kildehenvisningen dekker tallene fra API-et. Regner du ut vekst, andeler eller differanser, marker det — f.eks. «Endring i prosent er beregnet fra indeksverdiene over»
+- **Gjør uttrekket etterprøvbart.** Vis GET-URL-en eller POST-bodyen, eller tilby en lagret spørring (Steg 6), så brukeren kan kjøre samme uttrekk selv
+- **Vis `status`-merkede verdier som de er.** Bruk SSBs standardtegn i tabellen og forklar dem i en fotnote — ikke erstatt dem med tall, nuller eller tomme celler
 - Tilby å visualisere dataene — bruk `ssb-chart-skill` hvis den er tilgjengelig i miljøet
 - Tilby å laste ned i annet format (csv, xlsx)
 
@@ -271,6 +303,11 @@ Metadata-responsen inneholder `link`-objekter på rot- og variabel-nivå: `link.
 
 ## Fallgruver — gjør aldri
 
+- **Oppgi et tall du ikke har hentet i denne samtalen** — heller ikke som «omtrent» eller «rundt»
+- **Fyll hull i tidsserien** med anslag, interpolering eller framskriving
+- **Gjett variabelkoder** i stedet for å hente dem fra metadata
+- **Presenter tall fra en avsluttet tabell som gjeldende** — sjekk `discontinued`, oppgi `lastPeriod`, og finn tabellen serien fortsetter i
+- **Presenter egen beregning som SSB-tall** — vekstrater og andeler du har regnet ut, er dine
 - Hent data uten filtre og anta at du får hele tabellen — API-et returnerer defaultselection-uttrekket, og du kontrollerer ikke hva det inneholder; angi alltid eksplisitt seleksjon
 - Anta at kommunekoder er stabile over tid (kommunesammenslåinger i 2020!)
 - Bland koder fra forskjellige kodelister
@@ -301,7 +338,7 @@ Metadata-responsen inneholder `link`-objekter på rot- og variabel-nivå: `link.
 ```
 1. GET /tables?query=konsumprisindeks
 2. GET /tables/14700/metadata
-   → Sjekk ContentsCode: "KpiIndMnd" (indeks), "KpiMndEnd662" (12-mnd endring)
+   → Sjekk ContentsCode: "KpiIndMnd" (indeks 2025=100), "Tolvmanedersendring" (12-mnd endring, prosent), "Manedsendring" (månedsendring, prosent), "KpiVektMnd" (vekter)
 3. POST /tables/14700/data
    { "selection": [
        { "variableCode": "ContentsCode", "valueCodes": ["KpiIndMnd"] },
@@ -379,9 +416,10 @@ Se `references/troubleshooting.md` for vanlige feil og løsninger.
 
 Hvis API-et ikke er tilgjengelig:
 
-1. Henvis til SSBs Statistikkbank: https://www.ssb.no/statbank
-2. Foreslå relevante søkeord basert på spørsmålet
-3. Gi veiledning for manuelt oppslag (tabellnummer, variabler å se etter)
+1. **Si tydelig fra at data ikke kunne hentes.** Fyll aldri tomrommet med tall fra hukommelsen — uten API-tilgang leverer du veiledning, ikke statistikk
+2. Henvis til SSBs Statistikkbank: https://www.ssb.no/statbank
+3. Foreslå relevante søkeord basert på spørsmålet
+4. Gi veiledning for manuelt oppslag (tabellnummer, variabler å se etter)
 
 Trenger brukeren tall fra før Statistikkbanken-perioden (eldre folketellinger, NOS-publikasjoner, tidsserier fra 1800-tallet): bruk `ssb-histstat`-skillen hvis den er tilgjengelig i miljøet.
 

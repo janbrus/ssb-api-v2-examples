@@ -1,14 +1,13 @@
 # Claude Skill: SSB Chart
 
-***NB! Dette er første versjon - endringer vil kommme***
-
 En [Claude Skill](https://support.claude.com/en/articles/12512180-use-skills-in-claude) som lærer AI-verktøy som Claude å presentere norsk offentlig statistikk fra SSB i SSBs offisielle visuelle stil — som diagram, tabell eller dashboard.
 
 Skillen styrer **hvordan** data vises, ikke hvordan de hentes. Bruk den sammen med [`ssb-pxwebapi-v2`](../ssb-pxwebapi-v2) som henter dataene; denne skillen tar JSON-Stat2-responsen og gjør den om til en korrekt, SSB-stilet visualisering.
 
 ## Hva skillen gjør
 
-- Bruker SSBs **fargesystem** (kategorisk, sekvensiell og divergerende palett) med verdier i hex/RGB/CSS/JS/Python/openpyxl
+- Skiller mellom to **rendringsmål** som ikke deler stilregler: *inline chat-widget* (kun data-blekket er SSB-styrt — chrome, mørk modus og typografi følger vertens designsystem) og *frittstående leveranse* (nedlastbar HTML, PDF, Excel — full SSB-stil). Punktene under gjelder frittstående leveranse med mindre annet er nevnt
+- Bruker SSBs **fargesystem** (kategorisk, sekvensiell og divergerende palett) med verdier i hex/RGB/CSS/JS/Python/openpyxl. Den kategoriske paletten gjelder alltid, uansett rendringsmål
 - Setter riktig **typografi** (Roboto Condensed for titler, Open Sans for brødtekst, med Arial-fallback)
 - Gir en **diagramvalg-matrise** — når man skal bruke linje, horisontal søyle, ring, kart, scorecard, scatter, histogram eller small multiples, og hva man skal unngå (3D, doble y-akser, kakediagram, avkortet y-akse)
 - Beskriver **JSON-Stat2 → chart-config**-oppskriften: riktig tids-sortering via `category.index`, desimaler per metric fra `category.unit`, status-koder som visuelle hull (aldri interpolert)
@@ -21,9 +20,10 @@ Skillen styrer **hvordan** data vises, ikke hvordan de hentes. Bruk den sammen m
 
 ```
 ssb-chart-skill/
-├── SKILL.md                       # Hovedinstruksjoner: prinsipper, palett, typografi, diagramvalg, sjekkliste
+├── SKILL.md                       # Hovedinstruksjoner: prinsipper, rendringsmål, palett, typografi, diagramvalg, sjekkliste
 ├── README.md                      # Denne filen
-├── CLAUDE.md                      # Veiledning for å redigere selve skillen
+├── CHANGELOG.md                   # Endringslogg — versjon står i SKILL.md-frontmatter
+├── CLAUDE.md                      # Veiledning for å redigere selve skillen (følger ikke med i ZIP)
 └── references/
     ├── chart-selection.md         # Beslutningsmatrise per diagramtype (linje, søyle, ring, kart, scorecard …)
     ├── color-system.md            # Komplett fargespesifikasjon i alle formater (CSS/JS/Python/Recharts/Chart.js/matplotlib)
@@ -55,7 +55,7 @@ cp -r ssb-chart-skill .claude/skills/ssb-chart-skill
 
 Denne skillen inneholder **ingen datahenting** — den forutsetter at du allerede har en JSON-Stat2-respons fra SSBs PxWebApi v2. Last derfor opp begge skillene sammen for komplett arbeidsflyt:
 
-- **`ssb-pxwebapi-v2-skill`** — søker, utforsker og henter SSB-data. Eier dataformat-spesifikasjonen (`references/json-stat2.md`) som denne skillen peker til i stedet for å gjenta.
+- **`ssb-pxwebapi-v2`** — søker, utforsker og henter SSB-data. Eier dataformat-spesifikasjonen (`references/json-stat2.md`) som denne skillen peker til i stedet for å gjenta.
 - **`ssb-chart-skill`** (denne) — styrer presentasjonen av de hentede dataene.
 
 For svenske data finnes en parallell `scb-pxwebapi-v2`-skill; for vilkårlige PxWebApi v2-installasjoner finnes `generic-pxweb-v2-skill`. Chart-skillen er bevisst SSB-spesifikk (SSBs palett og kildelinje) og er ikke ment for andre datakilder.

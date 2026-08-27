@@ -14,7 +14,7 @@ Kurert liste over mye etterspurte tabeller, basert på faktisk bruk. Bruk alltid
 | 05184 | Innvandrere, etter kjønn og landbakgrunn                                | Årlig       | Innvandrerbefolkning etter kjønn og landbakgrunn (fra 1970) |
 | 06076 | Privathusholdninger og personer i privathusholdninger                   | Årlig       | Husholdningsstruktur, fylkesnivå                            |
 | 11342 | Areal og befolkning i kommuner, fylker og hele landet                   | Årlig       | Befolkningstetthet, areal per kommune                       |
-| 14288 | Framskrevet folkemengde kommuner, fylker og hele landet, 9 alternativer | Årlig       | Befolkningsprognoser til 2050                               |
+| 14746 | Framskrevet folkemengde kommuner, fylker og hele landet, 9 alternativer | Årlig       | Befolkningsprognoser til 2050                               |
 | 05375 | Forventet gjenstående levetid, etter kjønn og alder                     | Årlig       | Levealder, forventet gjenstående levetid                    |
 | 07995 | Døde, etter kjønn, alder og uke (foreløpige tall)                       | Ukentlig    | Overdødelighet, ukentlig dødsstatistikk                     |
 | 10467 | Fødte, etter jentenavn og guttenavn                                     | Årlig       | Navnestatistikk for nyfødte                                 |
@@ -35,7 +35,7 @@ Tabell 07459 er den mest brukte befolkningstabellen. Den dekker alle kommuner, f
 | 09654 | Priser på drivstoff                                   | Månedlig    | Bensin- og dieselpriser per liter                                                 |
 | 09387 | Kraftpris, nettleie og avgifter for husholdninger     | Kvartalsvis | Strømpriser for husholdninger                                                     |
 
-KPI (14700): Basisår 2025=100. `ContentsCode` "KpiIndMnd" = indeks, "KpiMndEnd662" = 12-måneders endring. Både 03013 og 03014 er avsluttet. KPI-JAE (14704) er populært kalt kjerneinflasjon og brukes mye i pengepolitisk analyse.
+KPI (14700): Basisår 2025=100. `ContentsCode` "KpiIndMnd" = indeks, "Tolvmanedersendring" = 12-måneders endring. Både 03013 og 03014 er avsluttet. KPI-JAE (14704) er populært kalt kjerneinflasjon og brukes mye i pengepolitisk analyse.
 
 ---
 
@@ -85,11 +85,11 @@ Tabell 12880 er unik fordi den inneholder SSBs egne prognoser for makroøkonomis
 
 ## Utenrikshandel
 
-| ID    | Tittel                                                        | Frekvens | Typisk bruk                                                                                         |
-| ----- | ------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------- |
-| 08799 | Utenrikshandel med varer, etter varenummer (HS) og land       | Månedlig | Eksport/import per vare og land, detaljert                                                          |
+| ID    | Tittel                                                        | Frekvens | Typisk bruk                                                             |
+| ----- | ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- |
+| 08799 | Utenrikshandel med varer, etter varenummer (HS) og land       | Månedlig | Eksport/import per vare og land, detaljert                              |
 | 08800 | Utenrikshandel med varer, etter varenummer (HS) og land       | Årlig    | Eksport/import per vare og land, detaljert. Oppdateres i februar og mai |
-| 08804 | Utenrikshandel med varer, hovedtall, etter land/handelsområde | Årlig    | Eksport/import hovedtall per land og verdensdel                                                     |
+| 08804 | Utenrikshandel med varer, hovedtall, etter land/handelsområde | Årlig    | Eksport/import hovedtall per land og verdensdel                         |
 
 ---
 
@@ -201,8 +201,6 @@ Tabell 12880 er unik fordi den inneholder SSBs egne prognoser for makroøkonomis
 
 ### Helse
 
-| ID    | Tittel                                                         | Frekvens | Typisk bruk     |
-| ----- | -------------------------------------------------------------- | -------- | --------------- |
-| 10261 | Somatiske sykehus, pasienter, behandlinger, opphold, diagnose, | Årlig    | Bruk av sykehus |
-
-* * 
+| ID    | Tittel                                                               | Frekvens | Typisk bruk                                                       |
+| ----- | -------------------------------------------------------------------- | -------- | ----------------------------------------------------------------- |
+| 14824 | Pasienter, behandlinger og oppholdsdøgn, somatisk, diagnose og aktør | Årlig    | Bruk av sykehus etter diagnosegrupper |

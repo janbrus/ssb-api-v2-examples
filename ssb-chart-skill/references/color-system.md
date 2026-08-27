@@ -4,9 +4,18 @@ Alle farger i SSBs designsystem for datavisualisering, med verdier i relevante f
 
 Basert på SSBs Plotly Template og designsystem.
 
+**Skillet mellom data-blekk og chrome avgjør rendringsmål.** Selve fargeverdiene under er rendringsmål-uavhengige *data* — det er hva du bruker dem på som avgjør (se SKILL.md → «Rendringsmål»):
+
+- **Data-blekk** — linjer, søyler, punkter, kartflater, heatmap-celler. Alltid SSB-paletten, hardkodet som hex, i **begge rendringsmål**. Canvas-biblioteker kan ikke lese CSS-variabler, så hardkodet hex er riktig her, ikke et unntak.
+- **Chrome** — akser, rutenett, bakgrunn, tekst, tooltip, fonter, kort. SSB-verdiene under (`#274247`, `#C3DCDC`, `#FFFFFF`, `#F0F8F9`) gjelder **kun frittstående leveranse**. I en inline chat-widget styres chrome av vertens tokens, ellers brytes mørk modus.
+
+De ferdige tema-objektene nederst (Recharts, Chart.js, matplotlib) blander begge deler i ett objekt. Bruk dem derfor ikke rått i widget — se delingen i hver seksjon.
+
 ---
 
 ## Primærfarger (identitet)
+
+**Chrome-farger — gjelder kun frittstående leveranse.** Alle fem brukes til tekst, akser, rammer og bakgrunner. I en inline chat-widget erstattes de av vertens tokens; skriv dem ikke inn i widget-DOM-en. Unntak: brukt på selve dataserien er utheving data-blekk og gjelder begge rendringsmål — `#00824D` (SSB Grønn 4) som fokusfarge, `#C3DCDC` (SSB Mørk 2) som nedtoning. Merk at `#C3DCDC` er lys: mot mørk vert-bakgrunn forsvinner nedtonede serier, så nedtone heller med opasitet på seriefargen. Se SKILL.md → «Utheving».
 
 ### SSB Mørk 5
 Tekst, akser, rammer, header-bakgrunn.
@@ -56,6 +65,8 @@ Nedtonet elementer, rutenett.
 ---
 
 ## Kategorisk palett
+
+**Data-blekk — gjelder begge rendringsmål.** Dette er den delen av fargesystemet som alltid er SSB-styrt, også i en inline chat-widget der alt annet følger verten.
 
 Bruk i denne rekkefølgen. For N serier, bruk rang 1 til N.
 
@@ -135,6 +146,8 @@ Bruk i denne rekkefølgen. For N serier, bruk rang 1 til N.
 
 ## Palett som arrays/lister
 
+**Gjelder begge rendringsmål** (CSS-variant kun der verten tillater egne custom properties — i widget er hardkodet hex fra JS-arrayet det trygge valget).
+
 ### JavaScript / TypeScript
 ```js
 const SSB_CATEGORICAL = [
@@ -170,6 +183,8 @@ SSB_CATEGORICAL = [
 
 ## Sekvensielt (grønn rampe)
 
+**Som data-blekk (choropleth-flater, heatmap-celler): begge rendringsmål** — rampen koder da en verdi og er like SSB-styrt som en seriefarge. **Som chrome (kort-bakgrunner, seksjonstoning): kun frittstående leveranse**, jf. SKILL.md → «Rendringsmål». Merk at trinn 1 (`#ECFEED`) er nær hvit: i widget med mørk modus må du sjekke at lyse trinn fortsatt har ≥3:1 mot vertens bakgrunn, og eventuelt starte rampen på trinn 2.
+
 5-trinns gradient for heatmaps, choropleths og intensitetsskalaer.
 
 | Trinn | Hex | RGB |
@@ -198,6 +213,8 @@ const SSB_SEQUENTIAL = ['#ECFEED', '#B6E8B8', '#1A9D49', '#075745', '#274247'];
 
 ## Divergerende (negativ–nøytral–positiv)
 
+**Samme regel som den sekvensielle rampen:** data-blekk i begge rendringsmål, chrome kun frittstående. Nøytralpolen `#F0F8F9` er en lys bakgrunnsfarge og forsvinner mot lys vert-bakgrunn — i widget bør nøytral heller være vertens bakgrunnsfarge eller en transparent celle, slik at bare de to polene er SSB-farger.
+
 For avvik fra gjennomsnitt, referanseverdier eller null.
 
 | Pol | Hex | RGB |
@@ -219,9 +236,17 @@ ssb_diverging = LinearSegmentedColormap.from_list('ssb_diverging', [
 
 ## Recharts tema-objekt
 
+Objektet er delt i to slik at widget-bruk kan plukke bare den delen som alltid er SSB-styrt.
+
 ```jsx
-const SSB_THEME = {
-  colors: ['#1A9D49', '#1D9DE2', '#C78800', '#C775A7', '#075745', '#0F2080', '#A3136C', '#471F00', '#909090'],
+// Data-blekk — gjelder BEGGE rendringsmål
+const SSB_SERIES = [
+  '#1A9D49', '#1D9DE2', '#C78800', '#C775A7',
+  '#075745', '#0F2080', '#A3136C', '#471F00', '#909090',
+];
+
+// Chrome — KUN frittstående leveranse (lys modus innebygd)
+const SSB_CHROME = {
   background: '#FFFFFF',
   text: '#274247',
   grid: '#C3DCDC',
@@ -235,13 +260,28 @@ const SSB_THEME = {
     body: "'Open Sans', Arial, sans-serif",
   },
 };
+
+// Frittstående leveranse: bruk hele temaet
+const SSB_THEME = { colors: SSB_SERIES, ...SSB_CHROME };
 ```
+
+**I inline chat-widget:** bruk `SSB_SERIES` alene og la `SSB_CHROME` ligge. Verten styler container, tekst og bakgrunn selv, og arver mørk modus automatisk. Der en komponent krever en eksplisitt farge, les vertens token i stedet:
+
+```js
+const css = getComputedStyle(document.documentElement);
+const textColor = css.getPropertyValue('--text-muted').trim();
+const gridColor = css.getPropertyValue('--border').trim();
+```
+
+Tokennavnene varierer med verten — sjekk hvilke som faktisk finnes før du bruker dem, og ha en nøytral fallback (f.eks. `|| 'currentColor'`) i stedet for å falle tilbake på SSB-hex.
 
 ---
 
 ## Chart.js konfigurasjon
 
 Felles styling — diagram-type-spesifikke felter (særlig `beginAtZero` på y-aksen) settes per diagram.
+
+**Gjelder frittstående leveranse.** Alt utenom `backgroundColor`-arrayet er chrome med innebygd lys modus. Chart.js tegner på canvas og arver ingenting fra vertens CSS, så i widget må chrome settes eksplisitt fra vertens tokens — se widget-varianten under konfigurasjonen.
 
 ```js
 const SSB_CHARTJS_DEFAULTS = {
@@ -270,12 +310,41 @@ const SSB_CHARTJS_DEFAULTS = {
 - **Søylediagram:** `scales.y.beginAtZero = true` (alltid — SSB-prinsipp 2).
 - **Linjediagram (absolutte tall):** `scales.y.beginAtZero = true`. Avkortet y-akse overdriver trender.
 - **Linjediagram (indekser, f.eks. KPI med basis 100):** `scales.y.beginAtZero = false` er greit, men marker basisår tydelig med annotasjon.
-- **Legend-posisjon:** `bottom` for linjediagram (mer plass til selve linjene), `top` eller `right` for søyler.
-- **Kildelinje:** bruk `plugins.subtitle` med `position: 'bottom'` og `color: '#909090'` (lever i canvas, følger med ved PNG-eksport). Se `format-guidelines.md` → «Vanilla JS + Chart.js v4».
+- **Legend-posisjon:** `top` eller `right` — aldri `bottom`. Under diagrammet kolliderer legend med kildelinjen og blir lest som en del av den (SKILL.md → «Tekst og merking»). Foretrekk uansett direkte merking av seriene, og bruk legend først når direkte merking gir overlapp.
+- **Kildelinje (frittstående leveranse):** bruk `plugins.subtitle` med `position: 'bottom'` og `color: '#909090'` (lever i canvas, følger med ved PNG-eksport). Se `format-guidelines.md` → «Vanilla JS + Chart.js v4». **I widget:** `display: false` — tittel og kilde skrives i chat-svarteksten.
+
+**Widget-variant:** behold `backgroundColor`-arrayet uendret og overstyr chrome med vertens tokens:
+
+```js
+const css = getComputedStyle(document.documentElement);
+const text = css.getPropertyValue('--text-muted').trim() || 'currentColor';
+const grid = css.getPropertyValue('--border').trim() || 'rgba(128,128,128,.25)';
+
+const widgetOptions = {
+  ...SSB_CHARTJS_DEFAULTS,
+  color: text,
+  borderColor: grid,
+  font: undefined,  // arv vertens typografi, ikke Open Sans
+  plugins: {
+    title: { display: false },     // tittel hører til chat-teksten
+    subtitle: { display: false },  // kildelinjen hører til chat-teksten
+    legend: { position: 'top', labels: { color: text } },
+    tooltip: {},                   // vertens default, ikke #274247
+  },
+  scales: {
+    x: { grid: { color: grid }, ticks: { color: text } },
+    y: { grid: { color: grid }, ticks: { color: text } },
+  },
+};
+```
+
+`beginAtZero`, `spanGaps: false` og desimalhåndtering settes likt i begge rendringsmål — statistisk integritet er ikke rendringsmål-avhengig.
 
 ---
 
 ## Python matplotlib theme
+
+**Gjelder kun frittstående leveranse.** Temaet brenner hvit bakgrunn og `#274247`-tekst inn i en bildefil (PNG/PDF) som ikke kan følge vertens mørk modus. Matplotlib er derfor ikke et widget-format — trenger du et diagram i chat-svaret, bruk et DOM-/canvas-bibliotek med vertens tokens i stedet.
 
 ```python
 def apply_ssb_theme():

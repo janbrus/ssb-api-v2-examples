@@ -3,6 +3,20 @@
 Gjeldende versjon står i `SKILL.md`-frontmatter under `metadata.version`.
 Har din kopi ingen `metadata.version`, er den fra før 2026-06-12 — last ned ny.
 
+## 1.4.0 — 2026-08-27
+
+* Ny toppseksjon «Dataintegritet — grunnregelen» i SKILL.md, plassert før API-oversikten: **oppgi aldri et tall som ikke er hentet fra API-et i samme samtale**. Dekker forbud mot tall fra hukommelsen og fra andre kilder, mot interpolering og framskriving, krav om å merke egne beregninger, bevare API-ets desimalpresisjon (`category.unit.decimals`), verifisere variabelkoder mot metadata, sjekke `discontinued`/`lastPeriod` og flagge foreløpige/reviderbare tall. Begrunnelsen er eksplisitt: feil tall med SSB-kildehenvisning skader tilliten til SSB, ikke bare til svaret
+* Steg 5 utvidet med tre krav: skill hentede tall fra egne beregninger (vekstrater, andeler, differanser), gjør uttrekket etterprøvbart ved å vise GET-URL eller POST-body, og vis `status`-merkede verdier som de er i stedet for å erstatte dem med tall eller tomme celler. Indekser skal alltid oppgis med referanseperiode
+* Fallgruver utvidet med fire integritetspunkter: tall som ikke er hentet, utfylling av hull i tidsserien, gjettede variabelkoder, egen beregning presentert som SSB-tall, og bruk av avsluttet tabell uten å si fra
+* Fallback skjerpet: manglende API-tilgang skal meldes eksplisitt — uten tilgang leveres veiledning, ikke statistikk
+* Rettet feil ContentsCode for tabell 14700 til `Tolvmanedersendring` (prosent) 
+* `parquet` dokumentert i SKILL.md Steg 4 (var kun i `references/output-formats.md`). Parquet bruker alltid koder — `outputFormatParams=UseCodesAndTexts` gir HTTP 400
+* `GET /config` bekreftet 2026-08-27: `apiVersion` 2.3.2, `maxDataCells` 800 000, `dataFormats` inkluderer `parquet`
+* Repo-adresse lagt inn to steder i SKILL.md: `metadata.source` i frontmatter og en synlig linje under base-URL-en — https://github.com/janbrus/ssb-api-v2-examples/tree/main/ssb-pxwebapi-v2-skill
+* Avslutta Tabell 10261 er erstattet med etterfølgeren 14824 «Pasienter, behandlinger og oppholdsdøgn i somatisk spesialisthelsetjeneste, etter kjønn, alder, bosted, aktør og diagnose» (2015-2025) i `references/common-tables.md` 
+* Fjernet en avkuttet skilletegnslinje (`* *`) sist i `references/common-tables.md`.
+
+
 ## 1.3.1 — 2026-08-05
 
 - Rate limit annonseres nå i HTTP-responsheadere i stedet for i `/config` (headere observert 2026-08-05: `x-ratelimit-limit: 40`, `x-ratelimit-policy: 40;w=60s`, `x-ratelimit-remaining`, `x-ratelimit-resource: SB_API_1MIN`). `maxCallsPerTimeWindow`/`timeWindow` står igjen i `/config`-responsen, men er nullstilt til `0` og ikke lenger i bruk (`0` betyr ikke «ingen grense»). Gjeldende grense er 40 kall per 60 sekunder (tidligere dokumentert som 30/minutt). Ny headertabell i `references/api-details.md`; 429-avsnittet og `/config`-eksempelet i `references/troubleshooting.md` samt endepunktvalg og «Viktige begrensninger» i SKILL.md oppdatert.

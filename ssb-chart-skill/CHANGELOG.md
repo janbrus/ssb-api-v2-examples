@@ -1,0 +1,20 @@
+# Endringslogg — ssb-chart
+
+Gjeldende versjon står i `SKILL.md`-frontmatter under `metadata.version`.
+Har din kopi ingen `metadata.version`, er den fra før 2026-08-27 — last ned ny.
+
+## 1.0 — 2026-08-27
+
+Første versjonerte utgave. Hovedendringen er at skillen nå skiller mellom to rendringsmål som ikke deler stilregler.
+
+- **Ny seksjon «Rendringsmål: widget vs. frittstående leveranse» i SKILL.md**, plassert før alle stilseksjonene: rendringsmål skal avgjøres *før* farger, typografi og layout velges. I **inline chat-widget** er kun data-blekket SSB-styrt — akser, rutenett, bakgrunn, tekst og mørk modus følger vertens tokens, tittel og kildelinje skrives i chat-svarteksten i stedet for inn i widgeten, og tabeller leveres som vanlig markdown. I **frittstående leveranse** (nedlastbar HTML, PDF, Excel) gjelder skillen uavkortet som før
+- **Fargesystemet omorganisert rundt data-blekk vs. chrome.** Rendringsmålet avgjøres av hva fargen brukes på, ikke av hvilken palett den kommer fra: alt som koder en verdi (linjer, søyler, punkter, kartflater, heatmap-celler) bruker SSB-farger i begge rendringsmål, mens chrome (akser, rutenett, bakgrunn, tekst, tooltip, kort) kun er SSB-styrt i frittstående leveranse. Gjelder også den sekvensielle rampen og den divergerende paletten: fyller de en kartflate er de data-blekk, toner de et kort er de chrome
+- **Rettet legend-posisjon fra `bottom` til `top`** i `references/color-system.md` (per diagram-type-reglene) og `references/format-guidelines.md` (Chart.js-eksempelet). Begge motsa SKILL.md-regelen «Plasser legend over eller til høyre — aldri under». En legend under diagrammet kolliderer med kildelinjen og blir lest som en del av den
+- **Tema-objektene delt** i `references/color-system.md`: Recharts-temaet er nå `SSB_SERIES` (data-blekk, begge rendringsmål) + `SSB_CHROME` (kun frittstående), satt sammen til `SSB_THEME` for frittstående bruk. Chart.js-seksjonen har fått en widget-variant som leser vertens tokens via `getComputedStyle` med nøytrale fallbacks, slår av `title`/`subtitle` og beholder seriefargene uendret. Et samlet tema brukt rått i en widget overstyrer vertens design og bryter mørk modus
+- **Scope-notat på hver seksjon i `references/format-guidelines.md`**, med en oversiktstabell øverst: tallformat og markdown-tabeller gjelder begge rendringsmål, React/HTML og Chart.js gjelder begge men med eksplisitte widget-avvik, mens PowerPoint, Excel og matplotlib kun gjelder frittstående leveranse. Matplotlib brenner lys bakgrunn inn i en bildefil og er derfor ikke et widget-format
+- **Mørk modus dekket i sjekklisten** og i kontrastadvarslene: `#ECFEED` (sekvensielt trinn 1), `#F0F8F9` (divergerende nøytralpol) og `#C3DCDC` (nedtoning) er lys-modus-farger som må kontrastsjekkes mot vertens bakgrunn i widget. Nedtoning av serier bør gjøres med opasitet på seriefargen i stedet
+- **Semantiske farger presisert:** på selve datamerket (søyle, pil, ikon) gjelder de begge rendringsmål; på tall og tekst i scorecards er kravet kontrast (≥4.5:1 mot vertens bakgrunn), ikke nøyaktig hex. `▲`/`▼` er obligatorisk uansett
+- `metadata.version` og `metadata.source` lagt inn i SKILL.md-frontmatter — https://github.com/janbrus/ssb-api-v2-examples/tree/main/ssb-chart-skill
+- Uendret i denne versjonen: den kategoriske paletten og rekkefølgen, maks 5 linjer i linjediagram (mot 6–7 kategorier ellers), y-akse fra 0 på søyler, status-koder som visuelle hull, desimaler lest per ContentsCode fra `category.unit`, og den obligatoriske flerspråklige kildelinjen
+- ZIP-en pakker nå alt under én toppmappe, `ssb-chart/`, i stedet for å legge filene på rot — samme struktur som `ssb-pxwebapi-v2`. `CHANGELOG.md` følger med i pakken; `CLAUDE.md` (vedlikeholdsveiledning) gjør det ikke
+- Ingen søskenskill berørt: det finnes ingen SCB- eller generisk motpart til denne skillen, siden SSB-paletten og «Kilde: SSB»-linjen er SSB-spesifikke by design

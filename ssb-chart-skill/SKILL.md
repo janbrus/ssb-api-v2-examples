@@ -10,6 +10,9 @@ description: >
   Bruk sammen med `ssb-pxwebapi-v2`-skillen for å hente data; denne skillen styrer
   hvordan dataene presenteres. Bruk IKKE denne skillen for visualisering av andre
   datakilder — da er en annen dataviz-skill riktig valg.
+metadata:
+  version: "1.0"
+  source: https://github.com/janbrus/ssb-api-v2-examples/tree/main/ssb-chart-skill
 ---
 
 # SSB Data Visualization
@@ -42,9 +45,45 @@ Selve oppskriften for å gå fra JSON-Stat2-respons til et chart-config (labels,
 
 ---
 
+## Rendringsmål: widget vs. frittstående leveranse
+
+Denne skillen brukes i to helt ulike rendringskontekster, og de deler IKKE samme stilregler. Avgjør rendringsmål før du velger farger, typografi eller layout — ikke etterpå.
+
+**A. Inline chat-widget** (f.eks. `visualize:show_widget` / tilsvarende verktøy som rendrer direkte i samtalen)
+
+Disse verktøyene har sitt eget vertsdesignsystem (layout, CSS-variabler, typografi, mørk modus) som SSB-stilen ikke skal overstyre i sin helhet. Kun dette er SSB-styrt i en widget:
+
+- **Data-blekk** — alt som koder en verdi: datalinjer, søyler, punkter, kartflater og heatmap-celler bruker SSB-paletten (`#1A9D49`, `#1D9DE2`, `#C78800` osv.), hardkodet som hex. Canvas-baserte biblioteker (Chart.js m.fl.) kan uansett ikke lese CSS-variabler, så hardkodet hex her er riktig og nødvendig, ikke et unntak fra prinsippet om å ikke finne opp farger.
+
+Alt annet følger vertens konvensjoner, ikke tabellene lenger ned i denne skillen:
+
+- **Akser, rutenett, bakgrunn, generell tekst** — bruk vertens fargetoken/design (f.eks. `getComputedStyle` mot `--text-muted`, `--border` osv. der verten støtter det), ikke de hardkodede SSB-hex-verdiene fra «Tekst og merking» → «Akser».
+- **Mørk modus** — obligatorisk. Vertens tokens løser dette automatisk; hardkodede lys-modus-farger som `#274247` eller `#C3DCDC` skal ikke skrives direkte inn i widget-DOM-en.
+- **Tittel og kilde** — skrives IKKE inn i widgeten. Verten krever ofte at forklarende tekst ligger i selve chat-svaret, ikke i widget-koden. Skriv deklarativ tittel og kildelinje (jf. «Tekst og merking» → «Kilde») i svarteksten rundt widget-kallet i stedet.
+- **Tabeller** — rendres IKKE med SSB-tabellstilen i en widget. Bruk vanlig markdown-tabell i chat-svaret. Seksjonen «Tabellformatering» lenger ned gjelder ikke her.
+
+**B. Frittstående leveranse** (nedlastbar HTML-fil, PDF-rapport, Excel-dashboard, eller annen artefakt brukeren laster ned/åpner utenfor selve samtalen)
+
+Her gjelder resten av denne skillen uavkortet: full SSB-fargepalett (kategorisk, sekvensiell, divergerende), SSB-typografi (Roboto Condensed/Open Sans), tittel og kilde skrevet inn i selve diagrammet/dokumentet, og SSB-tabellstilen fra «Tabellformatering».
+
+**Usikker på hvilken kategori du er i?** Spør deg selv: forsvinner visningen når samtalen lukkes (widget), eller er den ment å leve videre som fil (frittstående)? Er du fortsatt usikker, ikke gjett — spør brukeren.
+
+---
+
 ## Fargesystem (hurtigoversikt)
 
 Se `references/color-system.md` for komplett spesifikasjon med koder i alle formater.
+
+**Rendringsmålet avgjøres av hva fargen brukes på, ikke av hvilken palett den kommer fra:**
+
+| Brukt på                                                                    | Gjelder                                                          |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **Data-blekk** — linjer, søyler, punkter, kartflater, heatmap-celler         | **Begge rendringsmål** — alltid SSB-farger, hardkodet som hex     |
+| **Chrome** — akser, rutenett, bakgrunn, tekst, tooltip, kort                 | **Kun frittstående leveranse** — i widget: vertens tokens         |
+
+Dette gjelder alle palettene under, også den sekvensielle rampen, den divergerende paletten og utheving-/semantikkfargene: fyller de en kartflate eller en heatmap-celle, er de data-blekk og gjelder begge rendringsmål; toner de et kort eller en bakgrunn, er de chrome og gjelder kun frittstående. Rekkefølgen og maks-antall-reglene under gjelder alltid, uavhengig av rendringsmål.
+
+I widget må lyse trinn kontrastsjekkes mot vertens bakgrunn (mørk modus): `#ECFEED` og nøytralpolen `#F0F8F9` er lys-modus-farger. Se `references/color-system.md` for konkrete varianter.
 
 ### Kategorisk palett (bruk i denne rekkefølgen)
 
@@ -86,6 +125,8 @@ Se `references/color-system.md` for komplett spesifikasjon med koder i alle form
 - Fokus: `#1A9D49` (SSB Grønn) eller `#00824D` (SSB Grønn 4)
 - Nedtonet: `#C3DCDC` (SSB Mørk 2)
 
+Brukt på dataserier er begge data-blekk og gjelder begge rendringsmål. Men `#C3DCDC` er en lys-modus-farge: i widget med mørk bakgrunn blir nedtonede serier nesten usynlige — bruk vertens dempede tekstfarge, eller nedtone med opasitet på SSB-fargen i stedet.
+
 ### Semantiske farger
 
 | Betydning       | Farge         | Hex       | Tillegg          |
@@ -94,9 +135,13 @@ Se `references/color-system.md` for komplett spesifikasjon med koder i alle form
 | Negativ/nedgang | SSB Mørk Rosa | `#A3136C` | Alltid par med ▼ |
 | Nøytral         | SSB Grå       | `#909090` | —                |
 
+Gjelder begge rendringsmål når fargen ligger på selve datamerket (søyle, pil, ikon). På tall og tekst i scorecards — også i widget — er kravet kontrast, ikke nøyaktig hex: sjekk ≥4.5:1 mot vertens bakgrunn og juster lysheten om nødvendig. `▲`/`▼` er obligatorisk uansett, slik at betydningen ikke hviler på farge alene.
+
 ---
 
 ## Typografi
+
+**Gjelder frittstående leveranse.** I en inline chat-widget bruker du vertens typografitokens (heading-nivåer, brødtekststørrelse osv.) i stedet for tabellen under — se «Rendringsmål».
 
 | Element         | Font             | Størrelse | Vekt    | Farge                  |
 | --------------- | ---------------- | --------- | ------- | ---------------------- |
@@ -157,12 +202,17 @@ Hvis du ikke kan utvide deklarativt fra konteksten, bruk minimum den rensede con
 
 **Akser:**
 
-- Merk begge akser med enheter
+- Merk begge akser med enheter (gjelder alltid, begge rendringsmål)
 - Bruk forkortelser: k, mill., mrd.
-- Rutenett: lett stiplet `#C3DCDC` eller ingen
-- Akselinjer: tynn `#274247`
+- Frittstående leveranse: rutenett lett stiplet `#C3DCDC` eller ingen, akselinjer tynn `#274247`
+- Inline widget: bruk vertens gridline-/akselinjetokens i stedet for disse hex-verdiene — se «Rendringsmål»
 
-**Kilde** — Hvert diagram MÅ vise kilde og siste oppdateringsdato nederst i `#909090`:
+**Kilde** — Kilde og siste oppdateringsdato skal alltid følge med, men plasseringen avhenger av rendringsmål:
+
+- **Frittstående leveranse:** skrives nederst i selve diagrammet/dokumentet i `#909090`, som beskrevet under.
+- **Inline widget:** skrives i chat-svarteksten rett under/over widget-kallet, ikke inni widget-koden — se «Rendringsmål».
+
+Formulering (gjelder begge):
 
 - Norsk: `Kilde: SSB, tabell {id}. Sist oppdatert: {YYYY-MM-DD}.`
 - English: `Source: Statistics Norway, table {id}. Last updated: {YYYY-MM-DD}.`
@@ -182,6 +232,8 @@ Kilde: SSB, tabell 07459. Sist oppdatert: 2026-02-27.
 ---
 
 ## Tabellformatering
+
+**Gjelder frittstående leveranse** (HTML-fil, PDF, Excel). **Gjelder ikke inline chat-widget** — der skal tabeller ut som vanlig markdown i chat-svaret, ikke som stilsatt HTML inni widgeten. Se «Rendringsmål».
 
 | Egenskap        | Verdi                                               |
 | --------------- | --------------------------------------------------- |
@@ -212,22 +264,25 @@ Bruk **utheving-paletten** for å styre oppmerksomhet: SSB Grønn på nøkkelser
 
 Før du leverer en visualisering, verifiser:
 
-- [ ] Deklarativ tittel som oppsummerer innsikten
+- [ ] Rendringsmål avklart FØRST: inline widget eller frittstående leveranse? (se «Rendringsmål»)
+- [ ] Deklarativ tittel som oppsummerer innsikten — i widget: i chat-teksten, ikke inni widget-koden
 - [ ] Riktig diagramtype for data og budskap
 - [ ] Y-aksen starter på 0 for søylediagrammer
-- [ ] Farger i riktig kategorisk rekkefølge (SSB-paletten)
+- [ ] Data-blekk (serier, kartflater, heatmap-celler) i riktig kategorisk rekkefølge (SSB-paletten) — gjelder begge rendringsmål
 - [ ] Fargetilordning konsistent på tvers av alle diagrammer
 - [ ] Direkte merking brukt der mulig
 - [ ] Akser merket med enheter
-- [ ] Rutenett minimalt eller fjernet
-- [ ] Kilde og tidsperiode synlig: "Kilde: SSB, tabell {id}"
+- [ ] Rutenett/akselinjer: SSB-hex kun for frittstående leveranse; vertens tokens i widget
+- [ ] Kilde og tidsperiode synlig — i diagrammet (frittstående) eller i chat-teksten (widget)
 - [ ] WCAG AA: ≥3:1 ikke-tekst, ≥4.5:1 tekst
 - [ ] Diagrammet fungerer uten farge (form/label-backup)
+- [ ] Mørk modus fungerer — vertens tokens i widget; sjekk kontrast manuelt i frittstående HTML/PDF
 - [ ] Ingen dekorative elementer (3D, skygger, rammer)
 - [ ] Maks 6–7 kategorier (rest gruppert som "Andre")
 - [ ] Én tydelig innsikt per diagram
 - [ ] Norsk tallformat (mellomrom som tusenskilletegn)
-- [ ] Fonter: Roboto Condensed (titler) + Open Sans (brødtekst)
+- [ ] Fonter: Roboto Condensed + Open Sans kun for frittstående leveranse; vertens typografi i widget
+- [ ] Tabeller: markdown i chat-tekst for widget; SSB-tabellstil kun for frittstående leveranse
 
 ------
 
