@@ -11,7 +11,7 @@ description: >
   hvordan dataene presenteres. Bruk IKKE denne skillen for visualisering av andre
   datakilder — da er en annen dataviz-skill riktig valg.
 metadata:
-  version: "1.0"
+  version: "1.1"
   source: https://github.com/janbrus/ssb-api-v2-examples/tree/main/ssb-chart-skill
 ---
 
@@ -39,7 +39,7 @@ Denne skillen styrer visuell presentasjon av norsk offentlig statistikk fra SSB.
 
 ## Avhengigheter til datakilden
 
-Denne skillen forutsetter at du har en JSON-Stat2-respons fra SSBs PxWebApi v2. For format-detaljer — row-major value-array, `role.time` / `role.metric` / `role.geo`, `dimension.{var}.category.index` og `category.unit.decimals`, status-koder `"."` / `".."` / `":"`, `extension.px.contents` — se `ssb-pxwebapi-v2`-skillens `references/json-stat2.md`. Ikke restate disse detaljene her; pek på dem.
+Denne skillen forutsetter at du har en JSON-Stat2-respons fra SSBs PxWebApi v2. **Dataintegritet-grunnregelen i `ssb-pxwebapi-v2` gjelder også her:** visualiser aldri et tall som ikke er hentet fra API-et i samme samtale. Et diagram gir tall mer autoritet enn en tabell gjør — en akse og en kildelinje får et husket tall til å se etterprøvbart ut. Kjerneprinsipp 2 og 6 dekker hvordan tallene skal *behandles*; grunnregelen dekker hvorvidt du har lov til å tegne dem i det hele tatt. For format-detaljer — row-major value-array, `role.time` / `role.metric` / `role.geo`, `dimension.{var}.category.index` og `category.unit.decimals`, status-koder `"."` / `".."` / `":"`, `extension.px.contents` — se `ssb-pxwebapi-v2`-skillens `references/json-stat2.md`. Ikke restate disse detaljene her; pek på dem.
 
 Selve oppskriften for å gå fra JSON-Stat2-respons til et chart-config (labels, datasets, decimals, status-koder som hull) ligger i `references/jsonstat-to-chart.md`.
 

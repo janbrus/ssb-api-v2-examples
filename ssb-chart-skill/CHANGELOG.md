@@ -3,6 +3,12 @@
 Gjeldende versjon står i `SKILL.md`-frontmatter under `metadata.version`.
 Har din kopi ingen `metadata.version`, er den fra før 2026-08-27 — last ned ny.
 
+## 1.1 — 2026-08-30
+
+- **Kryssreferanse til dataintegritet-grunnregelen** lagt inn i «Avhengigheter til datakilden»: visualiser aldri et tall som ikke er hentet fra API-et i samme samtale. Begrunnelsen er visualiseringsspesifikk — et diagram gir tall mer autoritet enn en tabell gjør, fordi en akse og en kildelinje får et husket tall til å se etterprøvbart ut. Kjerneprinsipp 2 og 6 dekker hvordan tallene skal *behandles*; grunnregelen dekker om du har lov til å tegne dem i det hele tatt
+- Bevisst **ingen egen integritetsliste** her. Kjerneprinsipp 2 og 6 dekker allerede presisjon, y-akse fra 0 og status-koder som hull, og prinsipp 6 er skarpere formulert enn tilsvarende punkt i `ssb-pxwebapi-v2`. Regelen eies av datakilde-skillen; denne skillen peker på den
+- Søskenskill: `ssb-pxwebapi-v2` 1.4.1 og `scb-pxwebapi-v2` 0.10.0 slippes samtidig. Ett funn derfra er verdt å merke seg for diagrammer: **`timeUnit` finnes kun på `/tables`-treffet, ikke i json-stat2-dokumentet** — så aksefrekvensen (måned/kvartal/år) må bæres med fra søkesteget, den kan ikke leses av datasettet
+
 ## 1.0 — 2026-08-27
 
 Første versjonerte utgave. Hovedendringen er at skillen nå skiller mellom to rendringsmål som ikke deler stilregler.
