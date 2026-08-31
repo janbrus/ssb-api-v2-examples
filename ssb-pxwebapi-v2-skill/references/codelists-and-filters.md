@@ -146,16 +146,31 @@ Returnerer:
 
 NB: Kodeliste-IDer varierer mellom tabeller. Sjekk alltid metadata for den aktuelle tabellen.
 
-### outputValues-parameter (ved bruk av grupperinger)
+### outputValues-parameter — ikke bærende hos SSB
 
-Når du bruker en aggregerings-kodeliste, kan `outputValues[variabel]` styre hva som returneres:
+Parameteren `outputValues[variabel]` er dokumentert slik:
 
-| Verdi        | Beskrivelse                                          | Typisk bruk                                            |
+| Verdi        | Dokumentert betydning                                | Typisk bruk                                            |
 | ------------ | ---------------------------------------------------- | ------------------------------------------------------ |
 | `aggregated` | Returner aggregerte (summerte) verdier               | `agg_KommSummer` for sammenslåtte kommunetall over tid |
 | `single`     | Returner enkeltverdier fra kodelisten uten summering | `agg_Fylker2024` for å velge ut kun gjeldende fylker   |
 
-Eksempel — sammenslåtte kommunetall for Moss over tid:
+**Men den har ingen observerbar effekt hos SSB.** Verifisert 2026-08-30:
+
+| Test | Resultat |
+|---|---|
+| 07459 + `agg_KommSummer`, `K-0301`, `aggregated` / `single` / utelatt | identisk, `[717710, 724290, 728714]` |
+| 07459 + `agg_KommFylker`, `*`, `aggregated` / `single` / utelatt | identisk, 18 fylkeskoder |
+| `outputValues[Region]=nonsense` | **HTTP 200**, samme data |
+
+**Det er kodelisten som aggregerer.** To praktiske konsekvenser:
+
+- Utelater du parameteren, får du de samme tallene. Den er ufarlig å ha med, men ikke nødvendig — og den bør ikke forklares som forutsetningen for å få summerte verdier.
+- **En ugyldig verdi aksepteres stilltiende med HTTP 200.** En skrivefeil her gir ingen feilmelding og ingen endring i dataene, så den er usynlig. Ikke bruk parameteren som en kontroll du tror virker.
+
+Testen er kjørt mot SSB. Om SCB oppfører seg likt er **ikke** verifisert — sjekk før `scb-pxwebapi-v2` endres.
+
+Eksempel — sammenslåtte kommunetall for Moss over tid (parameteren beholdt, men den er ikke det som gjør jobben):
 
 ```
 GET /tables/07459/data?valueCodes[Region]=K-3103&valueCodes[Tid]=*&valueCodes[ContentsCode]=Personer1&codelist[Region]=agg_KommSummer&outputValues[Region]=aggregated

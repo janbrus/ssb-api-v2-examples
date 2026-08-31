@@ -12,7 +12,7 @@ description: >
   websøk når svaret finnes i norsk offentlig statistikk. Dekker kodelister,
   lagrede spørringer og outputformater (json-stat2, csv, xlsx).
 metadata:
-  version: "1.4.0"
+  version: "1.4.1"
   source: https://github.com/janbrus/ssb-api-v2-examples/tree/main/ssb-pxwebapi-v2-skill
 ---
 
@@ -25,7 +25,11 @@ https://data.ssb.no/api/pxwebapi/v2
 ```
 
 **Skillen vedlikeholdes her:** https://github.com/janbrus/ssb-api-v2-examples/tree/main/ssb-pxwebapi-v2-skill
-Sjekk repoet for nyere versjon, referansefiler og endringslogg. Denne kopien er v1.4.0.
+Sjekk repoet for nyere versjon, referansefiler og endringslogg. Denne kopien er v1.4.1.
+
+**SSB kjører fortsatt v1-API-et parallelt, på `https://data.ssb.no/api/v0/{no|en}/table`.** Det dukker opp fordi brukere kommer med gamle POST-bodyer i v1-form (`{"query": […], "response": {…}}`) fra skript og Power BI. Oversett dem ikke ad hoc — rut til `generic-pxweb-v1-skill` hvis den er tilgjengelig i miljøet. Request-siden er genuint forskjellig; kun respons-siden (json-stat2) er felles.
+
+**R-pakken `PxWebApiData` er derimot ikke en grunn til å rute til v1** — den støtter begge API-versjonene (1.9.0, 2026-02-02), med egne vignetter for hver. v2 har et eget snake_case-grensesnitt: `api_data()`, `get_api_data()`, `query_url()` og metadatafunksjonene `meta_frames()`/`meta_code_list()`/`meta_data()`, hver med `_1`/`_2`/`_12`-varianter for henholdsvis labels, koder eller begge. v1 bruker den eldre camelCase-formen `ApiData()`. Kommer brukeren med R-kode mot v2, hører den hjemme i denne skillen.
 
 ## Dataintegritet — grunnregelen
 
@@ -42,6 +46,7 @@ SSB er Norges offisielle statistikkprodusent. Tilliten til tallene er selve prod
 - **Verifiser variabelkoder mot metadata.** Tabell-ID-er er permanente og endres aldri, men variabelkoder (`ContentsCode`, verdikoder) skal bekreftes med metadata før bruk — ikke gjettes fra hukommelsen.
 - **Sjekk `discontinued` og `lastPeriod`.** Tabeller avsluttes, og serien fortsetter ofte i en ny tabell. Bruker du en avsluttet tabell, si det og oppgi siste periode. Finn etterfølgeren når den finnes.
 - **Vis `status`.** Manglende, foreløpige og konfidensielle verdier skal fram i tabellen, ikke skjules. Se `references/troubleshooting.md`.
+- **Vis obligatoriske noter.** Er `extension.noteMandatory` satt, har SSB bestemt at noten skal følge tallet. Å utelate den er å presentere tallet uten forbeholdet SSB selv knyttet til det — særlig når forbeholdet gjelder nettopp den beregningen du har gjort. Se Steg 5.
 - **Flagg foreløpige tall.** Nasjonalregnskap og flere andre serier revideres. Si fra når tallene kan endre seg.
 
 Finner du ikke tallet i Statistikkbanken, er riktig svar at det ikke ble funnet — med forslag til søkeord eller alternativ kilde. Et ærlig «vet ikke» er langt bedre enn et plausibelt tall som ikke stemmer. Feil tall med SSB-kildehenvisning skader tilliten til SSB, ikke bare til svaret.
@@ -160,16 +165,19 @@ Bruk `GET /tables/{id}/metadata` for å forstå tabellens struktur.
 Metadata returneres i json-stat2-format (Dataset-schema) — full formatreferanse i `references/json-stat2.md`. Fokuser på:
 
 - **`id`-array** — Variabelnavnene (f.eks. `["Region", "Kjonn", "Alder", "ContentsCode", "Tid"]`); `size`-arrayet gir antall verdier per variabel
-- **`dimension`-objekt** — Per variabel: koder (`category.index`), lesbare navn (`category.label`), enhet og desimaler (`category.unit`, på ContentsCode), samt `extension` med `elimination`, `eliminationValueCode` og `codelists` (tilgjengelige kodelister)
-- **`extension`-objekt (rot)** — `firstPeriod`, `lastPeriod`, `discontinued`, `contact`, og PX-metadata under `extension.px`: `subject-code`, `subject-area`, `decimals`, `heading`/`stub` (default-pivotering), og `contents` (kort tabelltittel — brukes til tittelbygging i Steg 5)
+- **`dimension`-objekt** — Per variabel: koder (`category.index`), lesbare navn (`category.label`), enhet og desimaler (`category.unit`, på ContentsCode), noter per verdi (`category.note`), samt `extension` med `elimination`, `codelists` (tilgjengelige kodelister) og `categoryNoteMandatory`
+- **`note`-array + `extension.noteMandatory` (rot)** — tabellnoter, og hvilke av dem som **skal vises**. `noteMandatory` er nøklet på note-indeks: `{"1": true}` betyr `note[1]`. Satt på bl.a. 14700, 14710 og 03013 — se Steg 5 og `references/json-stat2.md`
+- **`extension`-objekt (rot)** — `contact`, `discontinued`, `noteMandatory`, og PX-metadata under `extension.px`: `subject-code`, `subject-area`, `decimals`, `aggregallowed`, `heading`/`stub` (default-pivotering), og `contents` (kort tabelltittel — brukes til tittelbygging i Steg 5). **`firstPeriod`/`lastPeriod` ligger ikke her**, men på `/tables`-treffet og `GET /tables/{id}` — sammen med `timeUnit`, som er eneste kilde til tidsfrekvens
 - **`role`-objekt** — **Start analysen her:** `role.metric` viser hva som måles (antall, prosent, NOK, indeks) — hos SSB heter variabelen "statistikkvariabel" på norsk og `ContentsCode` på engelsk; sjekk `category.unit` for enhet og desimaler. `role.time` er tidsdimensjonen, `role.geo` er geografi — **hvis `role.geo` mangler, anta at dataene gjelder hele Norge**, ikke spør brukeren. Øvrige variabler i `id` er nedbrytningsdimensjoner (kjønn, alder, næring osv.). Når du senere filtrerer `role.time` (Steg 4), foretrekk `top()`/`from()` framfor `range()`/enkeltverdier.
 - **`link`-objekter (rot og per variabel)** — `link.describedby` kobler til SSBs Klass (klassifikasjoner) og VarDok (variabeldefinisjoner) via URN-er; `link.related` gir ferdige menneskelesbare lenker: på rot-nivå til statistikksiden og «Om statistikken», per variabel til definisjonssidene med label (f.eks. «Standard for kjønn») — se `references/klass-vardok.md`
 
 **Viktige regler om metadata:**
 
-- Variabler med `elimination: true` kan utelates — de summeres automatisk (enten til en forhåndsdefinert eliminasjonsverdi/sum, eller samtlige verdier aggregeres til én)
+- Variabler med `elimination: true` kan utelates — de summeres automatisk. **Les alltid dette flagget fra metadata-responsen.** I en data-respons svarer samme felt på et annet spørsmål (om uttrekket du fikk inneholder totalen), og villeder deg — se fellen i `references/json-stat2.md`
+- Utelater du en eliminerbar variabel, **forsvinner den helt fra responsen** — ikke som en «total»-rad, men ut av `id` og `dimension`. Ingenting i datasettet forteller at den ble summert bort. Noter det selv
+- SSB bruker begge PX-formene, og metadata skiller dem ikke: `Kjonn` i 07459 har ingen totalkode (kun `{Kvinner, Menn}`, API-et summerer på flyet), mens `Region` har totalkoden `0` = «Hele landet». `eliminationValueCode` er diskriminanten, men **den mangler i metadata** — en sveip over 50 tabeller fant den på null dimensjoner. Den dukker kun opp i en data-respons som inkluderer totalen. Se etter «Hele landet»/«I alt» i `category.label` i stedet
 - Variabler med `elimination: false` MÅ inkluderes i query. Tid og ContentsCode er alltid ikke-eliminerbare.
-- Detaljer per statistikkvariabel (`measuringType`, `priceType`, `adjustment`, `basePeriod`) og status-koder: se `references/json-stat2.md`
+- Detaljer per statistikkvariabel (`measuringType`, `priceType`, `adjustment`, `basePeriod`), obligatoriske noter, `aggregallowed` og status-koder: se `references/json-stat2.md`
 
 **Kodelister og filtrering:**
 
@@ -249,7 +257,8 @@ Viktigste mønstre: `top(N)` = siste N verdier, `from(verdi)` = fra og med, `ran
 - Tallformat: norsk = mellomrom + komma (1 234,5); engelsk = komma + punktum (1,234.5)
 - Presenter enheter tydelig (antall/count, prosent/percent, indeks/index, NOK). For indekser: oppgi referanseperioden (f.eks. 2015=100)
 - **Skill hentede tall fra egne beregninger.** Kildehenvisningen dekker tallene fra API-et. Regner du ut vekst, andeler eller differanser, marker det — f.eks. «Endring i prosent er beregnet fra indeksverdiene over»
-- **Gjør uttrekket etterprøvbart.** Vis GET-URL-en eller POST-bodyen, eller tilby en lagret spørring (Steg 6), så brukeren kan kjøre samme uttrekk selv
+- **Gjør uttrekket etterprøvbart.** Vis GET-URL-en eller POST-bodyen, eller tilby en lagret spørring (Steg 6), så brukeren kan kjøre samme uttrekk selv. **Oppgi eksplisitt hvilke dimensjoner du utelot og hvilken kodeliste du brukte** — responsen registrerer ingen av delene. En utelatt dimensjon forsvinner sporløst, og `codelist[Region]=agg_Fylker2024` kommer tilbake uten noe felt som navngir grupperingen. `agg_KommFylker` og `agg_KommSummer` gir tall som ser like ut og ikke er det
+- **Vis obligatoriske noter.** Er `extension.noteMandatory` satt, skal den noten fram i svaret — SSB har flagget den fordi tallet trenger forbeholdet. På 14700 og 14710 er det varselet om at referanseåret ble 2025=100 f.o.m. 2026, og at **endringstall beregnet fra disse seriene kan avvike fra publiserte endringstall**. Regner du ut endringstall etter regelen over, er det nøyaktig den størrelsen SSB har tatt forbehold om — da hører noten med. Noten følger med i data-responsen, så den koster ingen ekstra kall
 - **Vis `status`-merkede verdier som de er.** Bruk SSBs standardtegn i tabellen og forklar dem i en fotnote — ikke erstatt dem med tall, nuller eller tomme celler
 - Tilby å visualisere dataene — bruk `ssb-chart-skill` hvis den er tilgjengelig i miljøet
 - Tilby å laste ned i annet format (csv, xlsx)
@@ -366,7 +375,7 @@ Metadata-responsen inneholder `link`-objekter på rot- og variabel-nivå: `link.
 
 Tidsserier med kommunedata bør bruke kodeliste `agg_KommSummer` for å håndtere kommunesammenslåinger og gi konsistente tall over tid.
 
-NB: `agg_KommSummer` krever `K-`-prefiks på koden. Bruk `outputValues[Region]=aggregated` for å få summerte verdier.
+NB: `agg_KommSummer` krever `K-`-prefiks på koden. **Det er kodelisten som aggregerer** — `outputValues[Region]=aggregated` er ikke nødvendig for å få summerte verdier. Parameteren står igjen i eksempelet fordi den er ufarlig, men den er ikke bærende: se `references/codelists-and-filters.md` før du stoler på den.
 
 ```
 GET /tables/07459/data?valueCodes[Region]=K-0301&codelist[Region]=agg_KommSummer&outputValues[Region]=aggregated&valueCodes[ContentsCode]=Personer1&valueCodes[Tid]=top(10)&outputFormat=json-stat2

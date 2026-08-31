@@ -1,6 +1,6 @@
 # Feilsøking for PxWebApi v2
 
-Vanlige feilscenarier og løsninger, basert på API-ets Problem-respons (RFC 7807).
+Vanlige feilscenarier og løsninger. Feilresponsen ligner RFC 7807, men er ikke en full implementasjon: `type` er en ren streng («Parameter error»), ikke en URI, og `detail` settes som regel ikke. **Diagnosefeltet er `title`.**
 
 ---
 
@@ -8,7 +8,16 @@ Vanlige feilscenarier og løsninger, basert på API-ets Problem-respons (RFC 780
 
 ### 400 Bad Request
 
-Ugyldig forespørsel. Sjekk `detail`-feltet i Problem-responsen.
+Ugyldig forespørsel. **Diagnostiser fra `title`, ikke fra `detail`** — `detail` finnes som regel ikke. Verifiserte former (2026-08-30):
+
+| Situasjon | Payload |
+|---|---|
+| Ukjent variabel | `{"type":"Parameter error","title":"Non-existent variable","status":400}` |
+| Ugyldig verdikode | `… "title":"Non-existent value" …` |
+| Manglende obligatorisk variabel | `… "title":"Missing selection for mandantory variable" …` (sic, `mandantory`) |
+| For mange celler | `… "title":"Too many cells selected","detail":"Too many cells selected"` |
+
+`detail` settes kun i det siste tilfellet, og gjentar da bare `title`. Formen er identisk hos SCB, så en feilhåndtering skrevet mot SSB virker også der.
 
 **Vanlige årsaker:**
 
@@ -125,16 +134,28 @@ Se https://www.ssb.no/diverse/standardtegn-i-tabeller (engelsk: https://www.ssb.
 
 Bruk `GET /config` for å se gjeldende grenser:
 
+Full respons, verifisert 2026-08-30:
+
 ```json
 {
+  "apiVersion": "2.3.2",
+  "appVersion": "2.5.0+build.30",
+  "languages": [{"id": "no", "label": "Norsk"}, {"id": "en", "label": "English"}],
+  "defaultLanguage": "no",
   "maxDataCells": 800000,
   "maxCallsPerTimeWindow": 0,
   "timeWindow": 0,
-  "defaultLanguage": "no",
-  "languages": [{"id": "no", "label": "norsk (bokmål)"}, {"id": "en", "label": "English"}],
+  "license": "https://www.ssb.no/en/diverse/lisens",
+  "sourceReferences": [
+    {"language": "en", "text": "Source: Statistics Norway"},
+    {"language": "no", "text": "Kilde: Statistisk sentralbyrå"}
+  ],
   "defaultDataFormat": "json-stat2",
-  "dataFormats": ["px", "json-stat2", "csv", "xlsx", "html", "json-px"]
+  "dataFormats": ["json-stat2", "csv", "px", "xlsx", "html", "json-px", "parquet"],
+  "features": [{"id": "CORS", "params": [{"key": "enabled", "value": "True"}]}]
 }
 ```
+
+`sourceReferences` er verdt å kjenne: det er SSBs egen kildehenvisningsstreng per språk («Kilde: Statistisk sentralbyrå» / «Source: Statistics Norway»), ved siden av kortformen skillen bruker i Steg 5 («Kilde: SSB, tabell {id}»). Merk også at `parquet` ligger i `dataFormats`.
 
 Verdiene kan endre seg — hardkod dem ikke. NB: `maxCallsPerTimeWindow` og `timeWindow` står igjen i responsen, men er nullstilt til `0` og ikke lenger i bruk — `0` betyr **ikke** «ingen grense». Gjeldende rate limit annonseres i `x-ratelimit-*`-responsheaderne, se 429-avsnittet over og `api-details.md`.

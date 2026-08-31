@@ -15,6 +15,7 @@ En [Claude Skill](https://support.claude.com/en/articles/12512180-use-skills-in-
 scb-pxwebapi-v2/
 ├── SKILL.md                  # Huvudinstruktioner och arbetsflöde
 ├── README.md                 # Denna fil
+├── CHANGELOG.md              # Ändringslogg — gällande version står i SKILL.md-frontmatter (metadata.version)
 └── references/
     └── json-stat2.md         # json-stat2 formatspecifikation (Dataset, row-major, statuskoder — gäller även Eurostat, World Bank)
 ```
@@ -23,7 +24,12 @@ scb-pxwebapi-v2/
 
 ### Claude.ai
 
-1. Packa mappen som ZIP
+1. Packa de användarvända filerna som ZIP — endast `SKILL.md`, `README.md`, `CHANGELOG.md` och `references/` (utelämna `CLAUDE.md`, den är repo-intern):
+
+   ```bash
+   zip -r scb-pxwebapi-v2-skill.zip scb-pxwebapi-v2/SKILL.md scb-pxwebapi-v2/README.md scb-pxwebapi-v2/CHANGELOG.md scb-pxwebapi-v2/references/
+   ```
+
 2. Gå till **Settings > Features > Skills**
 3. Ladda upp ZIP-filen
 

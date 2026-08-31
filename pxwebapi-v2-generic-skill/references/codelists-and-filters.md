@@ -15,6 +15,23 @@ Reference for codelists and filter expressions in PxWebApi v2.
 
 Codelist IDs and prefixes vary between installations and tables. Always check metadata.
 
+### Where codelists come from, and why mixing them fails
+
+The two prefixes are not two flavours of the same thing — they sit at different levels, and knowing this explains most codelist errors.
+
+Underneath PxWeb, a **valueset** is a named list of value codes for a variable, and an **aggregation** is a set of groups built on top of one specific valueset. In file-based installations these are literally files (`.VS` and `.AGG`) beside the table; in relational installations (SSB, SCB) the database manages them. Either way the relationship is the same:
+
+> **An aggregation is defined on a valueset, not on a variable.**
+
+That single fact is the reason for the "never mix codelists" rule. `agg_X` is valid only while the variable is expressed through the valueset `agg_X` belongs to. Combine an aggregation from one valueset with codes from another and you get a `400`, on a query that otherwise looks well-formed.
+
+Two more consequences worth carrying:
+
+- **Codelist names are not namespaced by table.** Several tables can share one aggregation, and one variable can offer several. This is why copying a codelist name from another table's query so often fails — always read `extension.codelists` for the table in hand.
+- **Hierarchical code prefixes are meaningful.** A hierarchical valueset defines its levels by character position, so a code like `01.111` decomposes as `01` → `01.1` → `01.11` → `01.111`. That is why a wildcard such as `01*` lines up cleanly with a classification level instead of matching arbitrarily.
+
+Whether an installation makes aggregation meaningful at all is recorded separately, in `extension.px.aggregallowed` on the dataset — see `json-stat2.md`.
+
 ### Finding available codelists
 
 Codelists are listed in metadata under `dimension.{variable}.extension.codelists`.
@@ -47,7 +64,7 @@ Codelists are listed in metadata under `dimension.{variable}.extension.codelists
 GET /tables/{id}/data?valueCodes[Region]=*&codelist[Region]=agg_RegionLevel&valueCodes[ContentsCode]=Population&valueCodes[Tid]=top(5)
 ```
 
-`ContentsCode` and `Tid` are never eliminable and must always be included.
+Variables with `role: time` and `role: metric` are typically never eliminable and must always be included — verify per installation via the `extension.elimination` flag in metadata. In Nordic installations these are usually named `Tid` and `ContentsCode`.
 
 ### Looking up codelist contents
 
@@ -81,6 +98,8 @@ When using an aggregation codelist, `outputValues[variable]` controls what is re
 | `range(from,to)` | Interval (inclusive both ends) | `range(2018,2023)` |
 
 These are used as the **sole element** in the valueCodes array — do not combine with explicit codes.
+
+**For the time dimension, prefer `top(N)` and `from(value)` over `range(from,to)` and explicit period codes.** Relative filters pick up new periods automatically, so a shareable GET URL or a saved query keeps returning current data instead of freezing on the periods that happened to be latest when it was written. `range(2018,2023)` is right only when the closed interval is the point — a fixed reporting period, or a comparison against a specific baseline. This matters most for `/savedqueries`, whose whole purpose is to be re-run later.
 
 ### Wildcard filters
 

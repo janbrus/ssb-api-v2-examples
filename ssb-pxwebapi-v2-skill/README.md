@@ -22,7 +22,7 @@ ssb-pxwebapi-v2/
 └── references/
     ├── json-stat2.md                     # json-stat2 format-spesifikasjon (Dataset, row-major, status-koder, extension på dataset- og variabel-nivå — også gyldig for Eurostat, World Bank)
     ├── api-details.md                    # SSB-spesifikk driftsinformasjon (publiseringstider, grenser, lisens)
-    ├── codelists-and-filters.md          # Kodelister (inkl. KPI/COICOP-grupperinger), filtersyntaks, outputValues
+    ├── codelists-and-filters.md          # Kodelister (inkl. KPI/COICOP-grupperinger), filtersyntaks
     ├── search-syntax.md                  # Lucene-basert søkesyntaks for /tables?query=
     ├── klass-vardok.md                   # Kobling til SSBs Klass (klassifikasjoner) og VarDok (variabeldefinisjoner) via URN-er og link.related-lenker
     ├── output-formats.md                 # json-stat2, csv, xlsx, html, px, parquet, parametre for pivotering og etiketter
@@ -62,7 +62,7 @@ Skillen er ren kunnskap — den gir AI-assistenten *veiledning* for hvordan PxWe
 - **@jarib/pxweb-mcp** (https://www.npmjs.com/package/@jarib/pxweb-mcp) — open source MCP-server for PxWebApi-er, fungerer med SSB, SCB og andre statistikkbyråer som bruker PxWeb V2. Skillen inneholder `references/mcp-tools.md` med mapping mellom verktøyene og API-endepunktene.
 - **TRYs MCP-server** (https://tools.try.no/ssb-mcp) — hostet MCP-tjeneste; krever e-postregistrering og er av TRY merket som eksperimentell
 - **Egen MCP-server** — bygg din egen med FastMCP eller lignende
-- **PxWebApiData (R)** (https://cran.r-project.org/package=PxWebApiData) — R-pakke som henter data fra PxWeb/PxWebApi (SSB, SCB m.fl.) direkte inn i R som data frames
+- **PxWebApiData (R)** (https://cran.r-project.org/package=PxWebApiData) — R-pakke som henter data fra PxWeb/PxWebApi (SSB, SCB, Statistikkcentralen i Finland) direkte inn i R som data frames. Støtter **både v1 og v2**, med egen vignett for hver: v2 via `api_data()`/`query_url()`/`meta_data()` (snake_case), v1 via `ApiData()`
 - **Direkte API-kall** — skillen beskriver endepunktene slik at Claude eller andre kan konstruere korrekte URL-er
 
 ## Lisens

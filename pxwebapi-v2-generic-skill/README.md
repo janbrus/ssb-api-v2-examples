@@ -2,7 +2,7 @@
 
 A [Claude Skill](https://support.claude.com/en/articles/12512180-use-skills-in-claude) for accessing official statistics from any PxWebApi v2 installation. 
 
-This skill is a reduced version based on the one for Statistics Norway [SSB PxWebApi v2 skill ](../tree/main/ssb-pxwebapi-v2-skill).
+This skill is a reduced, vendor-neutral version derived from the Statistics Norway skill `ssb-pxwebapi-v2` (see link at the bottom of this README).
 
 ## What is PxWebApi v2?
 
