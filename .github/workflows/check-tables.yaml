@@ -1,0 +1,55 @@
+# Validerer ssb-pxwebapi-v2-skill mot SSBs live PxWebApi v2.
+#
+# Workflowen lå tidligere i ssb-pxwebapi-v2-skill/.github/ og kjørte derfor aldri —
+# GitHub Actions leser bare .github/workflows/ i repo-roten. Skriptene den kaller
+# antar at skillmappa er arbeidskatalog, derfor working-directory nedenfor.
+name: Validate ssb-pxwebapi-v2-skill
+
+on:
+  push:
+    paths:
+      - 'ssb-pxwebapi-v2-skill/SKILL.md'
+      - 'ssb-pxwebapi-v2-skill/references/**'
+      - 'ssb-pxwebapi-v2-skill/scripts/**'
+      - 'ssb-pxwebapi-v2-skill/ssb-pxwebapi-v2-skill.zip'
+      - '.github/workflows/check-tables.yaml'
+  pull_request:
+    paths:
+      - 'ssb-pxwebapi-v2-skill/SKILL.md'
+      - 'ssb-pxwebapi-v2-skill/references/**'
+      - 'ssb-pxwebapi-v2-skill/scripts/**'
+      - 'ssb-pxwebapi-v2-skill/ssb-pxwebapi-v2-skill.zip'
+      - '.github/workflows/check-tables.yaml'
+  schedule:
+    - cron: '0 6 * * 1'   # mandag 06:00 UTC — fanger drift i SSB-tabeller
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ssb-pxwebapi-v2-skill
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate common-tables.md against SSB PxWebApi v2
+        run: python3 scripts/check_common_tables.py --quiet --delay 1.0
+      - name: Validate example URLs and queries
+        run: python3 scripts/check_examples.py --quiet --delay 1.0
+
+  zip-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify ssb-pxwebapi-v2-skill.zip matches working tree
+        run: |
+          bash scripts/build_zip.sh /tmp/fresh.zip
+          mkdir /tmp/committed /tmp/fresh
+          unzip -q ssb-pxwebapi-v2-skill.zip -d /tmp/committed
+          unzip -q /tmp/fresh.zip -d /tmp/fresh
+          diff -r /tmp/committed /tmp/fresh \
+            || { echo '::error::ssb-pxwebapi-v2-skill/ssb-pxwebapi-v2-skill.zip er utdatert — kjør scripts/build_zip.sh i skillmappa og sjekk inn ny zip'; exit 1; }
