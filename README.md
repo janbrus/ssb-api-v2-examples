@@ -5,8 +5,15 @@
 **Skills for SSB PxWebApi v2** (AI mot Statistikkbanken)
 
 - [ssb-pxwebapi-v2-skill/](ssb-pxwebapi-v2-skill/) — En Skill som lærer Claude og andre AI-verktøy å bruke PxWebApi v2 mot SSB. Jeg har prøvd å tappe min kunnskap om dette til et AI-lesbart format.
-  Kan f.eks. brukes med MCP-server. Fungerer for flere enn Claude. Denne er bedre, og mye mer utfyllende enn Try sin. Se [ssb-pxwebapi-v2-skill/README.md](ssb-pxwebapi-v2-skill/README.md) for installasjon.
-- [ssb-chart-skill/](ssb-chart-skill/) — En skill for figurer og datavisualisering. Er ment å brukes sammen med ssb-pxwebapi-v2 skill Denne er bedre, og mye mer utfyllende enn Try sin. Se [ssb-chart-skill/README.md](ssb-chart-skill/README.md) for installasjon.
+- Kan f.eks. brukes med MCP-server. Fungerer for flere enn Claude. Denne er bedre, og mye mer utfyllende enn Try sin. Se [ssb-pxwebapi-v2-skill/README.md](ssb-pxwebapi-v2-skill/README.md) for installasjon.
+- [ssb-chart-skill/](ssb-chart-skill/) — En skill for figurer og datavisualisering. Er ment å brukes sammen med ssb-pxwebapi-v2 skill. Se [ssb-chart-skill/README.md](ssb-chart-skill/README.md) for installasjon.
+
+**Generic skill for PxWebApi v2**
+
+[pxwebapi-v2-generic-skill/](pxwebapi-v2-generic-skill/) — BETA: A Claude (AI) Skill to use PxWebApi v2 towards PxWebApi v2 installations using JSON-stat2. Can be used in Claude and Claude Code, e.g. with MCP. Probably works for more than Claude. See [pxwebapi-v2-generic-skill/README.md](pxwebapi-v2-generic-skill/README.md) for installation.
+
+**Generic skill for PxWebApi v1**
+[pxwebapi-v1-generic-skill/](pxwebapi-v1-generic-skill/) — BETA: A Claude (AI) Skill to use PxWebApi towards PxWebApi version 1 installations in differnt countries.
 
 
  [**Hva er nytt i PxWebApi versjon 2**](nytt_i_v2.md) 
