@@ -4,6 +4,42 @@ The current version is in `SKILL.md` frontmatter under `metadata.version`.
 If your copy has no `metadata.version`, it predates 2026-08-30 — get a newer one.
 Versions below 1.0.0 mark a skill with no published distribution yet.
 
+## 0.11.0 — 2026-09-01
+
+One new section. It closes a failure mode that is specific to v1 being POST-only: an assistant can
+do the whole workflow correctly and only discover at the last step that its tooling cannot retrieve
+data at all.
+
+- **New section "Environment check — before Step 1"**, placed after the v1-vs-v2 pointer and before
+  the Workflow. It asks one question up front — *can this environment send an HTTP POST with a JSON
+  body?* — and names the three cases:
+  - **Bash/shell with network access** to the target host → `curl -X POST` works, proceed normally.
+  - **A GET-only web-fetch tool** (one restricted to URLs already seen in a search or fetch result)
+    → **cannot** retrieve data. GET reaches metadata, the database/table hierarchy and `?config`,
+    and stops there. This is not a limitation to work around; in v1 there is no GET data endpoint
+    to fall back on.
+  - **An MCP tool wrapping HTTP with POST support** → works if connected.
+
+  The GET-only branch is the point of the section. Instead of abandoning the task, do the parts that
+  genuinely don't need POST — identify the installation, walk the hierarchy, pin down the exact
+  table and its variable codes from metadata (Steps 1–2) — then route to **Fallback** for the
+  figures: hand over the table's URL in the agency's web front end and its "API query for this
+  table" button, which emits a ready-made POST body the user or a POST-capable tool can run.
+
+  The closing instruction is the data-integrity rule applied to a *tooling* constraint rather than
+  an API failure: state plainly that the figures could not be retrieved in this environment, and
+  substitute nothing — not memory, not a third-party aggregator. Without it the GET-only case is
+  exactly the situation that tempts an assistant into a plausible number.
+
+Deliberately **not** done:
+
+- **Not propagated to the v2 siblings.** In v2 data retrieval is a GET, so a GET-only fetch tool can
+  read the data cube there. The failure mode this section prevents does not exist in
+  `generic-pxweb-v2-skill`, `ssb-pxwebapi-v2` or `scb-pxwebapi-v2`.
+- **No environment detection logic.** The section describes the classes of tooling and lets the
+  assistant recognise its own; probing for POST capability against a live agency host would spend a
+  request to learn something already known locally.
+
 ## 0.10.0 — 2026-08-31
 
 A broad installation inventory, and two corrections that came out of probing it. Every claim

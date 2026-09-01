@@ -13,7 +13,7 @@ description: >
   SCB `statistikdatabasen.scb.se/api/v2`) prefer `generic-pxweb-v2-skill`,
   `ssb-pxwebapi-v2` or `scb-pxwebapi-v2` instead.
 metadata:
-  version: "0.10.0"
+  version: "0.11.0"
 ---
 
 # PxWebApi v1 — Generic Skill
@@ -94,6 +94,37 @@ If you know PxWebApi v2, read this table before doing anything else. The **respo
 | Units, decimals, `role` in metadata | no (present in the json-stat2 *data* response only) | yes |
 
 See `references/v1-vs-v2.md` for a migration guide in both directions.
+
+---
+
+## Environment check — before Step 1
+
+v1 data retrieval needs an HTTP **POST** with a JSON body. Confirm you
+actually have a tool that can send one before starting the workflow below —
+otherwise you can burn many search/fetch calls discovering this only at the
+end.
+
+- **Bash/shell with network access to the target host** (Claude Code, a
+  sandboxed bash tool with the host allowlisted, a terminal) → `curl -X POST`
+  works. Proceed normally.
+- **A GET-only web-fetch tool** (e.g. one restricted to URLs already seen in
+  a search or fetch result) **cannot** send the POST body v1 data retrieval
+  needs. It can only retrieve what GET returns — metadata, database/table
+  hierarchy listings, and the `?config` limits. It cannot retrieve the data
+  cube itself.
+- **An MCP tool that wraps HTTP with POST support** (e.g. a curl-style MCP
+  server) → works if connected.
+
+If you don't have a POST-capable tool: say so plainly, then still do the
+useful GET-only parts — identify the installation, walk the hierarchy, find
+the exact table and its variable codes via metadata (Step 1–2 below don't
+need POST). Skip straight to **Fallback** for the data itself: give the user
+the direct table URL in the agency's web interface, and point them to its
+"API query for this table" / "Make this table available in your
+application" button, which emits a ready-made POST body they (or a
+POST-capable tool) can run. State clearly that you could not retrieve the
+actual figures in this environment — don't substitute numbers from memory or
+from a third-party aggregator instead.
 
 ---
 
